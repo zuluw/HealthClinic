@@ -1,5 +1,6 @@
 # InnoClinic
 
-## Internship project 
+## Internship Project
 
-### Copyright (c) Alexandr Mikhalkov
+---
+*Copyright (c) 2024 Alexandr Mikhalkov*
