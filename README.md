@@ -3,4 +3,4 @@
 ## Internship Project
 
 ---
-*Copyright (c) 2024 Alexandr Mikhalkov*
+*Copyright (c) 2026 Alexandr Mikhalkov*
