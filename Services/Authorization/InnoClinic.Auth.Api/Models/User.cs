@@ -16,5 +16,7 @@
         public string Email { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public UserStatus Status { get; set; } = UserStatus.Uncofirmed;
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
     }
 }

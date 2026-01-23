@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace InnoClinic.Auth.Api.Controllers;
@@ -71,14 +73,62 @@ public class AuthController : ControllerBase
             return Unauthorized("Incorrect username or password");
         }
 
-        var token = GenerateJwtToken(user);
+        var accessToken = GenerateAccessToken(user);
+        var refreshToken = GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
             Message = "Login successful!",
             user.UserName,
-            token = new JwtSecurityTokenHandler().WriteToken(token)
+            accessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
+            refreshToken
         });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(JwtDTO jwtDTO)
+    {
+        try
+        {
+            var userId = GetUserId(jwtDTO.AccessToken);
+            
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found!");
+            }
+
+            if (user.RefreshToken != jwtDTO.RefreshToken)
+            {
+                return Unauthorized("Invalid refresh token!");
+            }
+
+            if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            {
+                return Unauthorized("Refresh token expired!");
+            }
+
+            var accessToken = GenerateAccessToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                accessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
+                refreshToken,
+            });
+        }
+        catch (SecurityTokenException)
+        {
+            return Unauthorized("Invalid token!");
+        }
     }
 
     [HttpGet("google-login")]
@@ -115,16 +165,22 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
         }
 
-        var token = GenerateJwtToken(user);
+        var accessToken = GenerateAccessToken(user);
+        var refreshToken = GenerateRefreshToken();
+        
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
             Message = "Login via Google was successful.",
-            token = new JwtSecurityTokenHandler().WriteToken(token),
+            accesstoken = new JwtSecurityTokenHandler().WriteToken(accessToken),
+            refreshToken,
         });
     }
 
-    public JwtSecurityToken GenerateJwtToken(User user)
+    private JwtSecurityToken GenerateAccessToken(User user)
     {
         var claims = new[]
         {
@@ -136,14 +192,50 @@ public class AuthController : ControllerBase
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
+        var accessToken = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddHours(2),
+            expires: DateTime.UtcNow.AddSeconds(10),
+            //expires: DateTime.Now.AddHours(1),
             signingCredentials: creds
         );
 
-        return token;
+        return accessToken;
+    }
+
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using (var rand = RandomNumberGenerator.Create())
+        rand.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    private Guid GetUserId(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+
+        var validParam = new TokenValidationParameters
+        {
+            ValidateAudience = true,      
+            ValidateIssuer = true,        
+            ValidateIssuerSigningKey = true, 
+            IssuerSigningKey = key,
+            ValidateLifetime = false,    
+            ValidIssuer = _config["Jwt:Issuer"], 
+            ValidAudience = _config["Jwt:Audience"],
+            ValidAlgorithms = ["HS256"]
+        };
+
+        var principal = tokenHandler.ValidateToken(token, validParam, out var securityToken);
+
+        if (!Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
+        {
+            throw new SecurityTokenException("Invalid Id!");
+        }
+
+        return userId;
     }
 }
