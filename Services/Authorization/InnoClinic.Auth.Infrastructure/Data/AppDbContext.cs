@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using InnoClinic.Auth.Api.Models;
+using InnoClinic.Auth.Domain.Models;
 
-namespace InnoClinic.Auth.Api.Data
+namespace InnoClinic.Auth.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {

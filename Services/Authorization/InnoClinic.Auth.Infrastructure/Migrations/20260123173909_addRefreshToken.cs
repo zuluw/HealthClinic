@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace InnoClinic.Auth.Api.Migrations
+namespace InnoClinic.Auth.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class addRefreshToken : Migration

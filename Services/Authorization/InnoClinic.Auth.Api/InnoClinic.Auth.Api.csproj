@@ -21,4 +21,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InnoClinic.Auth.Infrastructure\InnoClinic.Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\InnoClinic.Auth.Application\InnoClinic.Auth.Application.csproj" />
+  </ItemGroup>
+
 </Project>

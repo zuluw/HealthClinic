@@ -1,6 +1,9 @@
 using FluentValidation;
-using InnoClinic.Auth.Api.Data;
-using InnoClinic.Auth.Api.Validators;
+using InnoClinic.Auth.Application.Interfaces;
+using InnoClinic.Auth.Application.Services;
+using InnoClinic.Auth.Application.Validators;
+using InnoClinic.Auth.Infrastructure.Data;
+using InnoClinic.Auth.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +16,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication(options =>
 {

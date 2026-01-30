@@ -1,17 +1,9 @@
-﻿using FluentValidation;
-using InnoClinic.Auth.Api.Data;
-using InnoClinic.Auth.Api.DTOs;
-using InnoClinic.Auth.Api.Models;
+﻿using InnoClinic.Auth.Application.DTOs;
+using InnoClinic.Auth.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace InnoClinic.Auth.Api.Controllers;
 
@@ -19,74 +11,39 @@ namespace InnoClinic.Auth.Api.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IValidator<RegisterDTO> _registerValidator;
-    private readonly IConfiguration _config;
+    private readonly IAuthService _authService;
 
-    public AuthController(AppDbContext context, IValidator<RegisterDTO> registerValidator, IConfiguration config)
+    public AuthController(IAuthService authService)
     {
-        _context = context;
-        _registerValidator = registerValidator;
-        _config = config;
+        _authService = authService;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDTO registerDTO)
     {
-        var validationResult = await _registerValidator.ValidateAsync(registerDTO);
-
-        if (!validationResult.IsValid)
+        try
         {
-            return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            var result = await _authService.RegisterAsync(registerDTO);
+            return Ok(result);
         }
-
-        bool userExists = await _context.Users.AnyAsync(u => u.UserName == registerDTO.UserName);
-        if (userExists)
-            return Conflict("User with the same username is exists!");
-
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
-
-        var newUser = new User
+        catch (Exception ex)
         {
-            Id = Guid.NewGuid(),
-            UserName = registerDTO.UserName,
-            FirstName = registerDTO.FirstName,
-            LastName = registerDTO.LastName,
-            Email = registerDTO.Email,
-            PasswordHash = passwordHash,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Users.Add(newUser);
-        await _context.SaveChangesAsync();
-
-        return Ok("Account successfully registered!");
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDTO loginDTO) 
+    public async Task<IActionResult> Login(LoginDTO loginDTO)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash))
+        try
         {
-            return Unauthorized("Incorrect username or password");
+            var result = await _authService.LoginAsync(loginDTO);
+            return Ok(result);
         }
-
-        var accessToken = GenerateAccessToken(user);
-        var refreshToken = GenerateRefreshToken();
-
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        await _context.SaveChangesAsync();
-
-        return Ok(new
+        catch (UnauthorizedAccessException ex)
         {
-            Message = "Login successful!",
-            user.UserName,
-            accessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-            refreshToken
-        });
+            return Unauthorized(ex.Message);
+        }
     }
 
     [HttpPost("refresh")]
@@ -94,38 +51,10 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var userId = GetUserId(jwtDTO.AccessToken);
-            
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-            {
-                return NotFound("User not found!");
-            }
-
-            if (user.RefreshToken != jwtDTO.RefreshToken)
-            {
-                return Unauthorized("Invalid refresh token!");
-            }
-
-            if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
-            {
-                return Unauthorized("Refresh token expired!");
-            }
-
-            var accessToken = GenerateAccessToken(user);
-            var refreshToken = GenerateRefreshToken();
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                accessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                refreshToken,
-            });
+            var result = await _authService.RefreshAsync(jwtDTO);
+            return Ok(result);
         }
-        catch (SecurityTokenException)
+        catch (Exception)
         {
             return Unauthorized("Invalid token!");
         }
@@ -142,100 +71,13 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-        if (!result.Succeeded)
-            return BadRequest("Google authentication error!");
+        if (!result.Succeeded) return BadRequest("Google authentication error!");
 
         var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
-        
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var firstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+        var lastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
 
-        if (user == null)
-        {
-            user = new User
-            {
-                UserName = email!,
-                Email = email!,
-                FirstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty,
-                LastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty,
-                PasswordHash = "google-auth",
-                Status = UserStatus.Confirmed
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-        }
-
-        var accessToken = GenerateAccessToken(user);
-        var refreshToken = GenerateRefreshToken();
-        
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        await _context.SaveChangesAsync();
-
-        return Ok(new
-        {
-            Message = "Login via Google was successful.",
-            accesstoken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-            refreshToken,
-        });
-    }
-
-    private JwtSecurityToken GenerateAccessToken(User user)
-    {
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim("UserStatus", user.Status.ToString()),
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var accessToken = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(10),
-            //expires: DateTime.Now.AddHours(1),
-            signingCredentials: creds
-        );
-
-        return accessToken;
-    }
-
-    private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rand = RandomNumberGenerator.Create())
-        rand.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
-    }
-
-    private Guid GetUserId(string token)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-
-        var validParam = new TokenValidationParameters
-        {
-            ValidateAudience = true,      
-            ValidateIssuer = true,        
-            ValidateIssuerSigningKey = true, 
-            IssuerSigningKey = key,
-            ValidateLifetime = false,    
-            ValidIssuer = _config["Jwt:Issuer"], 
-            ValidAudience = _config["Jwt:Audience"],
-            ValidAlgorithms = ["HS256"]
-        };
-
-        var principal = tokenHandler.ValidateToken(token, validParam, out var securityToken);
-
-        if (!Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
-        {
-            throw new SecurityTokenException("Invalid Id!");
-        }
-
-        return userId;
+        var authResponse = await _authService.GoogleAuthAsync(email!, firstName, lastName);
+        return Ok(authResponse);
     }
 }

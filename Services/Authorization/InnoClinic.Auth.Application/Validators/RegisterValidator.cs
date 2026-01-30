@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using InnoClinic.Auth.Api.DTOs;
+using InnoClinic.Auth.Application.DTOs;
 
-namespace InnoClinic.Auth.Api.Validators
+namespace InnoClinic.Auth.Application.Validators
 {
     public class RegisterValidator : AbstractValidator<RegisterDTO>
     {

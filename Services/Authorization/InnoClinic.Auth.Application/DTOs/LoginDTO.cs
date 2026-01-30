@@ -1,4 +1,4 @@
-﻿namespace InnoClinic.Auth.Api.DTOs
+﻿namespace InnoClinic.Auth.Application.DTOs
 {
     public class LoginDTO
     {

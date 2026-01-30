@@ -1,4 +1,4 @@
-﻿namespace InnoClinic.Auth.Api.Models
+﻿namespace InnoClinic.Auth.Domain.Models
 {
     public enum UserStatus
     {
