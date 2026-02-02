@@ -1,3 +1,4 @@
-﻿namespace InnoClinic.Auth.Domain.Exceptions;
-
-public class NotFoundException(string message) : BaseException(message, 404);
+﻿namespace InnoClinic.Auth.Domain.Exceptions
+{
+    public class NotFoundException(string message) : BaseException(message, 404);
+}

@@ -1,11 +1,12 @@
-﻿namespace InnoClinic.Auth.Domain.Exceptions;
-
-public abstract class BaseException : Exception
+﻿namespace InnoClinic.Auth.Domain.Exceptions
 {
-    public int StatusCode { get; }
-
-    protected BaseException(string message, int statusCode) : base(message)
+    public abstract class BaseException : Exception
     {
-        StatusCode = statusCode;
+        public int StatusCode { get; }
+
+        protected BaseException(string message, int statusCode) : base(message)
+        {
+            StatusCode = statusCode;
+        }
     }
 }
