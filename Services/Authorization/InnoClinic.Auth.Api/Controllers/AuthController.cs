@@ -19,45 +19,25 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
-        try
-        {
-            var result = await _authService.RegisterAsync(registerDTO);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var result = await _authService.RegisterAsync(registerDTO);
+        return Ok(result);
+        //return Created("api/auth/profile", result);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDTO loginDTO)
+    public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
     {
-        try
-        {
-            var result = await _authService.LoginAsync(loginDTO);
-            return Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ex.Message);
-        }
+        var result = await _authService.LoginAsync(loginDTO);
+        return Ok(result);
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh(JwtDTO jwtDTO)
+    public async Task<IActionResult> Refresh([FromBody] JwtDTO jwtDTO)
     {
-        try
-        {
-            var result = await _authService.RefreshAsync(jwtDTO);
-            return Ok(result);
-        }
-        catch (Exception)
-        {
-            return Unauthorized("Invalid token!");
-        }
+        var result = await _authService.RefreshAsync(jwtDTO);
+        return Ok(result);
     }
 
     [HttpGet("google-login")]

@@ -22,7 +22,7 @@ namespace InnoClinic.Auth.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("InnoClinic.Auth.Api.Models.User", b =>
+            modelBuilder.Entity("InnoClinic.Auth.Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

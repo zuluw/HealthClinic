@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="Services/Authorization/InnoClinic.Auth.Api/InnoClinic.Auth.Api.csproj" />
+  <Project Path="Services/Authorization/InnoClinic.Auth.Application/InnoClinic.Auth.Application.csproj" />
+  <Project Path="Services/Authorization/InnoClinic.Auth.Domain/InnoClinic.Auth.Domain.csproj" />
+  <Project Path="Services/Authorization/InnoClinic.Auth.Infrastructure/InnoClinic.Auth.Infrastructure.csproj" />
+  <Project Path="Services/Offices/InnoClinic.Offices.Api/InnoClinic.Offices.Api.csproj" />
+  <Project Path="Services/Offices/InnoClinic.Offices.Application/InnoClinic.Offices.Application.csproj" />
+  <Project Path="Services/Offices/InnoClinic.Offices.Domain/InnoClinic.Offices.Domain.csproj" />
+  <Project Path="Services/Offices/InnoClinic.Offices.Infrastructure/InnoClinic.Offices.Infrastructure.csproj" />
+</Solution>

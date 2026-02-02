@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="InnoClinic.Offices.Api/InnoClinic.Offices.Api.csproj" />
+  <Project Path="InnoClinic.Offices.Application/InnoClinic.Offices.Application.csproj" />
+  <Project Path="InnoClinic.Offices.Domain/InnoClinic.Offices.Domain.csproj" />
+  <Project Path="InnoClinic.Offices.Infrastructure/InnoClinic.Offices.Infrastructure.csproj" />
+</Solution>

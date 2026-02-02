@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="InnoClinic.Auth.Api/InnoClinic.Auth.Api.csproj" />
+  <Project Path="InnoClinic.Auth.Application/InnoClinic.Auth.Application.csproj" />
+  <Project Path="InnoClinic.Auth.Domain/InnoClinic.Auth.Domain.csproj" />
+  <Project Path="InnoClinic.Auth.Infrastructure/InnoClinic.Auth.Infrastructure.csproj" />
+</Solution>

@@ -1,0 +1,37 @@
+services:
+  auth-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-auth-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=24012006Sasha@
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  offices-db:
+    image: mongo:latest
+    container_name: innoclinic-offices-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=24012006Sasha@
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  mongo-ui:
+    image: mongo-express:latest
+    container_name: innoclinic-mongo-ui
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=24012006Sasha@
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:24012006Sasha%40@offices-db:27017/
+
+volumes:
+  mssql-data:
+  mongo-data:
