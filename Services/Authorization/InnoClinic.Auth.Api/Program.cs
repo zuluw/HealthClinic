@@ -1,4 +1,5 @@
 using FluentValidation;
+using InnoClinic.Auth.Api.Middleware;
 using InnoClinic.Auth.Application.Interfaces;
 using InnoClinic.Auth.Application.Services;
 using InnoClinic.Auth.Application.Validators;
@@ -55,6 +56,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

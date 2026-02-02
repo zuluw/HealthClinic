@@ -19,24 +19,24 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterDTO data)
     {
-        var result = await _authService.RegisterAsync(registerDTO);
+        var result = await _authService.RegisterAsync(data);
         return Ok(result);
         //return Created("api/auth/profile", result);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+    public async Task<IActionResult> Login([FromBody] LoginDTO data)
     {
-        var result = await _authService.LoginAsync(loginDTO);
+        var result = await _authService.LoginAsync(data);
         return Ok(result);
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] JwtDTO jwtDTO)
+    public async Task<IActionResult> Refresh([FromBody] JwtDTO data)
     {
-        var result = await _authService.RefreshAsync(jwtDTO);
+        var result = await _authService.RefreshAsync(data);
         return Ok(result);
     }
 

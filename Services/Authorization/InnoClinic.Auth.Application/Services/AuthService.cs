@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using InnoClinic.Auth.Domain.Exceptions;
 
 namespace InnoClinic.Auth.Application.Services;
 
@@ -28,11 +29,11 @@ public class AuthService : IAuthService
     {
         var validationResult = await _registerValidator.ValidateAsync(registerDTO);
         if (!validationResult.IsValid)
-            throw new Exception(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
 
         bool userExists = await _userRepository.ExistsByUserNameAsync(registerDTO.UserName);
-        if (userExists) 
-            throw new Exception("User with the same username is exists!");
+        if (userExists)
+            throw new BadRequestException("User with the same username already exists!");
 
         var newUser = new User
         {
@@ -54,7 +55,7 @@ public class AuthService : IAuthService
     {
         var user = await _userRepository.GetByUserNameAsync(loginDTO.UserName); 
         if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash))
-            throw new UnauthorizedAccessException("Incorrect username or password");
+            throw new UnauthorizedException("Incorrect username or password");
 
         return await CreateAuthResponse(user, "Login successful!");
     }
@@ -65,7 +66,7 @@ public class AuthService : IAuthService
         var user = await _userRepository.GetByIdAsync(userId);
 
         if (user == null || user.RefreshToken != jwtDTO.RefreshToken || user.RefreshTokenExpiryTime < DateTime.UtcNow)
-            throw new SecurityTokenException("Invalid or expired token");
+            throw new UnauthorizedException("Invalid or expired refresh token");
 
         return await CreateAuthResponse(user);
     }
@@ -157,7 +158,7 @@ public class AuthService : IAuthService
         }, out _);
 
         if (!Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
-            throw new SecurityTokenException("Invalid Id!");
+            throw new UnauthorizedException("Invalid token payload!");
 
         return userId;
     }
