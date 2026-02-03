@@ -5,42 +5,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.Auth.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<User?> GetByUserNameAsync(string userName)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+        return await context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
     }
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task<User> GetByIdAsync(Guid id)
     {
-        return await _context.Users.FirstAsync(u => u.Id == id);
+        return await context.Users.FirstAsync(u => u.Id == id);
     }
 
     public async Task<bool> ExistsByUserNameAsync(string userName)
     {
-        return await _context.Users.AnyAsync(u => u.UserName == userName);
+        return await context.Users.AnyAsync(u => u.UserName == userName);
     }
 
     public void Add(User user)
     {
-        _context.Users.Add(user);
+        context.Users.Add(user);
     }
 
     public async Task SaveChangesAsync()
     {
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 }
