@@ -1,0 +1,28 @@
+services:
+  auth-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-auth-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${AUTH_DB_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  auth-api:
+    build:
+      context: .
+      dockerfile: InnoClinic.Auth.Api/Dockerfile
+    container_name: innoclinic-auth-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Authentication__Google__ClientSecret=${GOOGLE_CLIENT_SECRET}
+      - Jwt__Key=${AUTH_JWT_KEY}
+      - ConnectionStrings__DefaultConnection=${AUTH_DB_CONNECTION}
+    depends_on:
+      - auth-db
+volumes:
+  mssql-data:
