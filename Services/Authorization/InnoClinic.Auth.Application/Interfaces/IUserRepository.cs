@@ -11,4 +11,4 @@ namespace InnoClinic.Auth.Application.Interfaces
         void Add(User user);
         Task SaveChangesAsync();
     }
-}
+}   
