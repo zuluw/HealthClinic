@@ -1,28 +1,24 @@
 ﻿using FluentValidation;
 using InnoClinic.Auth.Application.DTOs;
 using InnoClinic.Auth.Application.Interfaces;
+using InnoClinic.Auth.Application.Utils;
+using InnoClinic.Auth.Domain.Exceptions;
 using InnoClinic.Auth.Domain.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using InnoClinic.Auth.Domain.Exceptions;
 
 namespace InnoClinic.Auth.Application.Services
 {
     public class AuthService(IUserRepository userRepository, IConfiguration config, IValidator<RegisterDTO> registerValidator) : IAuthService
     {
-        public async Task<string> RegisterAsync(RegisterDTO registerDTO)
+        public async Task<string> RegisterAsync(RegisterDTO data)
         {
-            var validationResult = await registerValidator.ValidateAsync(registerDTO);
+            var validationResult = await registerValidator.ValidateAsync(data);
             if (!validationResult.IsValid)
             {
                 throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
             }
 
-            bool userExists = await userRepository.ExistsByUserNameAsync(registerDTO.UserName);
+            bool userExists = await userRepository.ExistsByUserNameAsync(data.UserName);
             if (userExists)
             {
                 throw new BadRequestException("User with the same username already exists");
@@ -31,11 +27,11 @@ namespace InnoClinic.Auth.Application.Services
             var newUser = new User
             {
                 Id = Guid.NewGuid(),
-                UserName = registerDTO.UserName,
-                FirstName = registerDTO.FirstName,
-                LastName = registerDTO.LastName,
-                Email = registerDTO.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password),
+                UserName = data.UserName,
+                FirstName = data.FirstName,
+                LastName = data.LastName,
+                Email = data.Email,
+                PasswordHash = PasswordHasher.HashPassword(data.Password),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -44,10 +40,11 @@ namespace InnoClinic.Auth.Application.Services
             return "Account successfully registered";
         }
 
-        public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO)
+        public async Task<AuthResponseDTO> LoginAsync(LoginDTO data)
         {
-            var user = await userRepository.GetByUserNameAsync(loginDTO.UserName);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash))
+            var user = await userRepository.GetByUserNameAsync(data.UserName);
+            
+            if ((user == null) || (!PasswordHasher.VerifyPassword(data.Password, user.PasswordHash)))
             {
                 throw new UnauthorizedException("Incorrect username or password");
             }
@@ -55,15 +52,15 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, "Login successful");
         }
 
-        public async Task<AuthResponseDTO> RefreshAsync(JwtDTO jwtDTO)
+        public async Task<AuthResponseDTO> RefreshAsync(JwtDTO data)
         {
-            var userId = GetUserId(jwtDTO.AccessToken);
+            var userId = JwtProvider.GetUserIdFromToken(data.AccessToken, config["Jwt:Key"]!, config["Jwt:Issuer"]!, config["Jwt:Audience"]!) ?? throw new UnauthorizedException("Invalid token");
             var user = await userRepository.GetByIdAsync(userId);
 
-            if (user == null || user.RefreshToken != jwtDTO.RefreshToken || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            if ((user == null) || (user.RefreshToken != data.RefreshToken) || (user.RefreshTokenExpiryTime < DateTime.UtcNow))
             {
                 throw new UnauthorizedException("Invalid or expired refresh token");
-            }                
+            }
 
             return await CreateAuthResponse(user);
         }
@@ -90,78 +87,16 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, "Login via Google was successful");
         }
 
-        private async Task<AuthResponseDTO> CreateAuthResponse(User user, string message = null)
+        private async Task<AuthResponseDTO> CreateAuthResponse(User user, string? message = null)
         {
-            var accessToken = GenerateAccessToken(user);
-            var refreshToken = GenerateRefreshToken();
+            var accessToken = JwtProvider.GenerateAccessToken(user, config["Jwt:Key"]!, config["Jwt:Issuer"]!, config["Jwt:Audience"]!);
+            var refreshToken = JwtProvider.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            
             await userRepository.SaveChangesAsync();
 
-            return new AuthResponseDTO(
-                Message: message,
-                UserName: user.UserName,
-                AccessToken: new JwtSecurityTokenHandler().WriteToken(accessToken),
-                RefreshToken: refreshToken
-            );
-        }
-
-        private JwtSecurityToken GenerateAccessToken(User user)
-        {
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim("UserStatus", user.Status.ToString()),
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
-
-            return new JwtSecurityToken(
-                issuer: config["Jwt:Issuer"],
-                audience: config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-            );
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-
-            using (var rand = RandomNumberGenerator.Create())
-            {
-                rand.GetBytes(randomNumber);
-            }
-
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        private Guid GetUserId(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
-
-            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateAudience = true,
-                ValidateIssuer = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = key,
-                ValidateLifetime = false,
-                ValidIssuer = config["Jwt:Issuer"],
-                ValidAudience = config["Jwt:Audience"],
-                ValidAlgorithms = ["HS256"]
-            }, out _);
-
-            if (!Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
-            {
-                throw new UnauthorizedException("Invalid token payload");
-            }
-
-            return userId;
+            return new AuthResponseDTO(message, user.UserName, accessToken, refreshToken);
         }
     }
 }

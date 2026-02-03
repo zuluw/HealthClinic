@@ -4,9 +4,9 @@ namespace InnoClinic.Auth.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> RegisterAsync(RegisterDTO registerDTO);
-        Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO);
-        Task<AuthResponseDTO> RefreshAsync(JwtDTO jwtDTO);
+        Task<string> RegisterAsync(RegisterDTO data);
+        Task<AuthResponseDTO> LoginAsync(LoginDTO data);
+        Task<AuthResponseDTO> RefreshAsync(JwtDTO data);
         Task<AuthResponseDTO> GoogleAuthAsync(string email, string firstName, string lastName);
     }
 }
