@@ -44,7 +44,7 @@ namespace InnoClinic.Auth.Application.Services
             return "Account successfully registered";
         }
 
-        public async Task<object> LoginAsync(LoginDTO loginDTO)
+        public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO)
         {
             var user = await userRepository.GetByUserNameAsync(loginDTO.UserName);
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash))
@@ -55,7 +55,7 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, "Login successful");
         }
 
-        public async Task<object> RefreshAsync(JwtDTO jwtDTO)
+        public async Task<AuthResponseDTO> RefreshAsync(JwtDTO jwtDTO)
         {
             var userId = GetUserId(jwtDTO.AccessToken);
             var user = await userRepository.GetByIdAsync(userId);
@@ -68,7 +68,7 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user);
         }
 
-        public async Task<object> GoogleAuthAsync(string email, string firstName, string lastName)
+        public async Task<AuthResponseDTO> GoogleAuthAsync(string email, string firstName, string lastName)
         {
             var user = await userRepository.GetByEmailAsync(email);
 
@@ -76,6 +76,7 @@ namespace InnoClinic.Auth.Application.Services
             {
                 user = new User
                 {
+                    Id = Guid.NewGuid(),
                     UserName = email,
                     Email = email,
                     FirstName = firstName,
@@ -89,23 +90,22 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, "Login via Google was successful");
         }
 
-        private async Task<object> CreateAuthResponse(User user, string message = null)
+        private async Task<AuthResponseDTO> CreateAuthResponse(User user, string message = null)
         {
             var accessToken = GenerateAccessToken(user);
             var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            
             await userRepository.SaveChangesAsync();
 
-            var response = new
-            {
-                Message = message,
-                user.UserName,
-                accessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                refreshToken
-            };
-            return response;
+            return new AuthResponseDTO(
+                Message: message,
+                UserName: user.UserName,
+                AccessToken: new JwtSecurityTokenHandler().WriteToken(accessToken),
+                RefreshToken: refreshToken
+            );
         }
 
         private JwtSecurityToken GenerateAccessToken(User user)
