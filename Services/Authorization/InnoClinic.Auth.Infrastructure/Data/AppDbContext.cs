@@ -17,7 +17,7 @@ namespace InnoClinic.Auth.Infrastructure.Data
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.UserName).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.UserName).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.UserName).IsUnique();
                 entity.Property(e => e.PasswordHash).IsRequired();
                 entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
