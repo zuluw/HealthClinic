@@ -12,10 +12,10 @@ namespace InnoClinic.Auth.Application.Utils
         public static string GenerateAccessToken(User user, string key, string issuer, string audience)
         {
             var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim("UserStatus", user.Status.ToString()),
-        };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("UserStatus", user.Status.ToString()),
+            };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

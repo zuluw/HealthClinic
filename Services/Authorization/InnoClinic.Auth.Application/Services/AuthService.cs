@@ -87,6 +87,20 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, "Login via Google was successful");
         }
 
+        public async Task ChangeStatusAsync(Guid userId, UserStatus newStatus)
+        {
+            var user = await userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.Status = newStatus;
+
+            await userRepository.SaveChangesAsync();
+        }
+
         private async Task<AuthResponseDTO> CreateAuthResponse(User user, string? message = null)
         {
             var accessToken = JwtProvider.GenerateAccessToken(user, config["Jwt:Key"]!, config["Jwt:Issuer"]!, config["Jwt:Audience"]!);

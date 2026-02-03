@@ -1,5 +1,6 @@
 ﻿using InnoClinic.Auth.Application.DTOs;
 using InnoClinic.Auth.Application.Interfaces;
+using InnoClinic.Auth.Domain.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,13 @@ namespace InnoClinic.Auth.Api.Controllers
 
             var authResponse = await authService.GoogleAuthAsync(email!, firstName, lastName);
             return Ok(authResponse);
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] UserStatus newStatus)
+        {
+            await authService.ChangeStatusAsync(id, newStatus);
+            return NoContent();
         }
     }
 }

@@ -13,6 +13,21 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var requiredSettings = new[] {
+    "Jwt:Key",
+    "ConnectionStrings:DefaultConnection",
+    "Authentication:Google:ClientSecret"
+};
+
+foreach (var key in requiredSettings)
+{
+    if (string.IsNullOrEmpty(builder.Configuration[key]))
+    {
+        throw new InvalidOperationException(
+            $"Critical configuration error: Parameter '{key}' not found!");
+    }
+}
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
