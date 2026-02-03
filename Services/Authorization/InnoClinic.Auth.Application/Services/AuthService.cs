@@ -10,7 +10,7 @@ namespace InnoClinic.Auth.Application.Services
 {
     public class AuthService(IUserRepository userRepository, IConfiguration config, IValidator<RegisterDTO> registerValidator) : IAuthService
     {
-        public async Task<string> RegisterAsync(RegisterDTO data)
+        public async Task<bool> RegisterAsync(RegisterDTO data)
         {
             var validationResult = await registerValidator.ValidateAsync(data);
             if (!validationResult.IsValid)
@@ -26,18 +26,16 @@ namespace InnoClinic.Auth.Application.Services
 
             var newUser = new User
             {
-                Id = Guid.NewGuid(),
                 UserName = data.UserName,
                 FirstName = data.FirstName,
                 LastName = data.LastName,
                 Email = data.Email,
                 PasswordHash = PasswordHasher.HashPassword(data.Password),
-                CreatedAt = DateTime.UtcNow
             };
 
             userRepository.Add(newUser);
             await userRepository.SaveChangesAsync();
-            return "Account successfully registered";
+            return true;
         }
 
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO data)
