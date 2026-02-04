@@ -8,6 +8,20 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var requiredSettings = new[] {
+    "MongoDbSettings:ConnectionString",
+    "MongoDbSettings:DatabaseName"
+};
+
+foreach (var key in requiredSettings)
+{
+    if (string.IsNullOrEmpty(builder.Configuration[key]))
+    {
+        throw new InvalidOperationException(
+            $"Critical configuration error: Parameter '{key}' not found in configuration!");
+    }
+}
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext() 
