@@ -5,7 +5,7 @@ namespace InnoClinic.Offices.Application.Interfaces
 {
     public interface IOfficeService
     {
-        Task<IEnumerable<Office>> GetAllAsync();
+        Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters);
         Task<Office?> GetByIdAsync(string id);
         Task<Office> CreateAsync(OfficeDto officeDto);
         Task UpdateAsync(string id, OfficeDto officeDto);

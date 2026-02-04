@@ -9,10 +9,11 @@ namespace InnoClinic.Offices.Api.Controllers
     public class OfficesController(IOfficeService officeService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParameters parameters)
         {
-            var offices = await officeService.GetAllAsync();
-            return Ok(offices);
+            var validParams = parameters with { PageNumber = parameters.PageNumber < 1 ? 1 : parameters.PageNumber };
+            var result = await officeService.GetAllAsync(validParams);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

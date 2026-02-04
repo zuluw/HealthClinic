@@ -8,9 +8,11 @@ namespace InnoClinic.Offices.Application.Services
 {
     public class OfficeService(IOfficeRepository repository, ILogger<OfficeService> logger) : IOfficeService
     {
-        public async Task<IEnumerable<Office>> GetAllAsync()
+        public async Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters)
         {
-            return await repository.GetAllAsync();
+            var (items, totalCount) = await repository.GetAllAsync(parameters);
+
+            return new PagedResult<Office>(items, parameters.PageNumber, PaginationParameters.PageSize, totalCount);
         }
 
         public async Task<Office?> GetByIdAsync(string id)
