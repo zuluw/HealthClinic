@@ -2,46 +2,51 @@
 using InnoClinic.Offices.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InnoClinic.Offices.Api.Controllers;
-
-[ApiController]
-[Route("api/offices")]
-public class OfficesController(IOfficeService officeService) : ControllerBase
+namespace InnoClinic.Offices.Api.Controllers
 {
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [ApiController]
+    [Route("api/offices")]
+    public class OfficesController(IOfficeService officeService) : ControllerBase
     {
-        var offices = await officeService.GetAllAsync();
-        return Ok(offices);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var offices = await officeService.GetAllAsync();
+            return Ok(offices);
+        }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
-    {
-        var office = await officeService.GetByIdAsync(id);
-        if (office == null) return NotFound();
-        return Ok(office);
-    }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var office = await officeService.GetByIdAsync(id);
+            if (office == null)
+            {
+                return NotFound();
+            }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] OfficeDto officeDto)
-    {
-        var result = await officeService.CreateAsync(officeDto);
+            return Ok(office);
+        }
 
-        return Created($"api/offices/{result.Id}", result);
-    }
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] OfficeDto officeDto)
+        {
+            var result = await officeService.CreateAsync(officeDto);
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto)
-    {
-        await officeService.UpdateAsync(id, officeDto);
-        return NoContent();
-    }
+            return Created($"api/offices/{result.Id}", result);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
-    {
-        await officeService.DeleteAsync(id);
-        return NoContent();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto)
+        {
+            await officeService.UpdateAsync(id, officeDto);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await officeService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }
