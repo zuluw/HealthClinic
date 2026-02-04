@@ -1,4 +1,5 @@
 using FluentValidation;
+using InnoClinic.Offices.Api.Middleware;
 using InnoClinic.Offices.Application.Interfaces;
 using InnoClinic.Offices.Application.Services;
 using InnoClinic.Offices.Application.Validators;
@@ -32,8 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseSerilogRequestLogging();
-
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

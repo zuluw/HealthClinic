@@ -1,8 +1,4 @@
-﻿namespace InnoClinic.Offices.Application.DTOs;
-
-public class OfficeDto
+﻿namespace InnoClinic.Offices.Application.DTOs
 {
-    public string Address { get; set; } = string.Empty;
-    public string RegistryPhoneNumber { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
+    public record OfficeDto(string Address, string RegistryPhoneNumber, bool IsActive);
 }

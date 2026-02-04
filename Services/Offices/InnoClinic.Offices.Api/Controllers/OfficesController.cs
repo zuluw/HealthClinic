@@ -6,26 +6,19 @@ namespace InnoClinic.Offices.Api.Controllers;
 
 [ApiController]
 [Route("api/offices")]
-public class OfficesController : ControllerBase
+public class OfficesController(IOfficeService officeService) : ControllerBase
 {
-    private readonly IOfficeService _officeService;
-
-    public OfficesController(IOfficeService officeService)
-    {
-        _officeService = officeService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var offices = await _officeService.GetAllAsync();
+        var offices = await officeService.GetAllAsync();
         return Ok(offices);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
-        var office = await _officeService.GetByIdAsync(id);
+        var office = await officeService.GetByIdAsync(id);
         if (office == null) return NotFound();
         return Ok(office);
     }
@@ -33,7 +26,7 @@ public class OfficesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] OfficeDto officeDto)
     {
-        var result = await _officeService.CreateAsync(officeDto);
+        var result = await officeService.CreateAsync(officeDto);
 
         return Created($"api/offices/{result.Id}", result);
     }
@@ -41,14 +34,14 @@ public class OfficesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto)
     {
-        await _officeService.UpdateAsync(id, officeDto);
+        await officeService.UpdateAsync(id, officeDto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _officeService.DeleteAsync(id);
+        await officeService.DeleteAsync(id);
         return NoContent();
     }
 }

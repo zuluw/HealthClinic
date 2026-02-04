@@ -5,26 +5,21 @@ using MongoDB.Driver;
 
 namespace InnoClinic.Offices.Infrastructure.Repositories;
 
-public class OfficeRepository : IOfficeRepository
+public class OfficeRepository(IConfiguration configuration) : IOfficeRepository
 {
-    private readonly IMongoCollection<Office> _offices;
-
-    public OfficeRepository(IConfiguration configuration)
-    {
-        var client = new MongoClient(configuration["MongoDbSettings:ConnectionString"]);
-        var database = client.GetDatabase(configuration["MongoDbSettings:DatabaseName"]);
-
-        _offices = database.GetCollection<Office>("Offices");
-    }
+    private readonly IMongoCollection<Office> _offices = 
+        new MongoClient(configuration["MongoDbSettings:ConnectionString"])
+            .GetDatabase(configuration["MongoDbSettings:DatabaseName"])
+            .GetCollection<Office>("Offices");
 
     public async Task<IEnumerable<Office>> GetAllAsync()
     {
         return await _offices.Find(_ => true).ToListAsync();
     }
 
-    public async Task<Office?> GetByIdAsync(string id)
+    public async Task<Office> GetByIdAsync(string id)
     {
-        return await _offices.Find(o => o.Id == id).FirstOrDefaultAsync();
+        return await _offices.Find(o => o.Id == id).FirstAsync();
     }
 
     public async Task CreateAsync(Office office)
