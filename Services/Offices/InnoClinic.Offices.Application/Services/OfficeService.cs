@@ -18,15 +18,15 @@ namespace InnoClinic.Offices.Application.Services
             return await repository.GetByIdAsync(id);
         }
 
-        public async Task<Office> CreateAsync(OfficeDto officeDto)
+        public async Task<Office> CreateAsync(OfficeDto data)
         {
-            logger.LogInformation("Creating a new office at address: {Address}", officeDto.Address);
+            logger.LogInformation("Creating a new office at address: {Address}", data.Address);
 
             var office = new Office
             {
-                Address = officeDto.Address,
-                RegistryPhoneNumber = officeDto.RegistryPhoneNumber,
-                IsActive = officeDto.IsActive
+                Address = data.Address,
+                RegistryPhoneNumber = data.RegistryPhoneNumber,
+                IsActive = data.IsActive
             };
 
             await repository.CreateAsync(office);
@@ -35,9 +35,9 @@ namespace InnoClinic.Offices.Application.Services
             return office;
         }
 
-        public async Task UpdateAsync(string id, OfficeDto officeDto)
+        public async Task UpdateAsync(string id, OfficeDto data)
         {
-            logger.LogInformation("Updating office {Id}. New address: {Address}", id, officeDto.Address);
+            logger.LogInformation("Updating office {Id}. New address: {Address}", id, data.Address);
 
             var existingOffice = await repository.GetByIdAsync(id);
             if (existingOffice == null)
@@ -46,9 +46,9 @@ namespace InnoClinic.Offices.Application.Services
                 throw new NotFoundException("Office not found");
             }
 
-            existingOffice.Address = officeDto.Address;
-            existingOffice.RegistryPhoneNumber = officeDto.RegistryPhoneNumber;
-            existingOffice.IsActive = officeDto.IsActive;
+            existingOffice.Address = data.Address;
+            existingOffice.RegistryPhoneNumber = data.RegistryPhoneNumber;
+            existingOffice.IsActive = data.IsActive;
 
             await repository.UpdateAsync(id, existingOffice);
             logger.LogInformation("Office {Id} information updated", id);
