@@ -16,17 +16,27 @@
    ```bash
    docker-compose up -d --build
 
-## API Testing
-Postman collections are located in the `/postman` folder. 
-1. Import collections into Postman.
-2. Create an environment with `base_url_auth` (localhost:8080) and `base_url_offices` (localhost:8082).
-3. Run the **Login** request first to populate access tokens.
+## API Testing (Postman)
+The collections in the `/postman` folder are designed to work as a sequence. Follow these steps to initialize all required variables:
+
+1. **Import**: Import the JSON collection files into Postman.
+2. **Global Variables**: variables are pre-configured in the **Collection Variables**.
+3. **Step 1: Authentication (Auth API)**
+   - Run the **Login** request. 
+   - This will automatically save data to the collection variables.
+4. **Step 2: Initialize Data (Offices API)**
+   - Run the **Get Offices** (or similar GET) request.
+   - This will automatically save data to the collection variables.
+5. **Ready to Test**: Now all other requests (Create, Update, Delete) will have the necessary IDs and Tokens pre-filled.
+
+> **Tip**: Check the **Variables** tab of the collection to see the current values of `first_office_id`, `access_token`, etc.
+
+> **Note**: If you changed the default ports in `docker-compose.yml`, update the corresponding variables in the **Variables** tab of the imported collection.
 
 ## Services
 - **Auth API:** http://localhost:8080/swagger
 - **Offices API:** http://localhost:8082/swagger
 - **Mongo UI:** http://localhost:8081
-```
 
 ---
 *Copyright (c) 2026 Alexandr Mikhalkov*
