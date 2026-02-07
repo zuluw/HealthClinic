@@ -24,8 +24,7 @@ foreach (var key in requiredSettings)
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext() 
-    .WriteTo.Console() 
+    .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog();

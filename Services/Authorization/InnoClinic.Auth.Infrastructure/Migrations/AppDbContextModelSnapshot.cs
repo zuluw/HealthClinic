@@ -72,6 +72,32 @@ namespace InnoClinic.Auth.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@innoclinic.com",
+                            FirstName = "System",
+                            LastName = "Admin",
+                            PasswordHash = "$2a$11$XcnlxYM.BJ8YPPS25N5CH.il8J6hxW/umZvgHVQ3dG8qR1bkc7iNq",
+                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 2,
+                            UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "sashka@mail.ru",
+                            FirstName = "Aleksandr",
+                            LastName = "Mikhalkov",
+                            PasswordHash = "$2a$11$XcnlxYM.BJ8YPPS25N5CH.il8J6hxW/umZvgHVQ3dG8qR1bkc7iNq",
+                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 1,
+                            UserName = "Zuluw"
+                        });
                 });
 #pragma warning restore 612, 618
         }

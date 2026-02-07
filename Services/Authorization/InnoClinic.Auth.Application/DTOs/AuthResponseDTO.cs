@@ -1,9 +1,10 @@
 ﻿namespace InnoClinic.Auth.Application.DTOs
 {
     public record AuthResponseDTO(
-        string? Message,
+        Guid UserId,
         string UserName,
         string AccessToken,
-        string RefreshToken
+        string RefreshToken,
+        string Message = ""
     );
 }

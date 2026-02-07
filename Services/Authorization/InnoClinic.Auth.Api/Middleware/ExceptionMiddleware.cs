@@ -1,11 +1,12 @@
-﻿using InnoClinic.Auth.Api.Models;
-using InnoClinic.Auth.Domain.Exceptions;
+﻿using InnoClinic.Auth.Domain.Exceptions;
 using System.Net;
 
 namespace InnoClinic.Auth.Api.Middleware
 {
     public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
+        private record ErrorResponse(int StatusCode, string Message);
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -14,8 +15,7 @@ namespace InnoClinic.Auth.Api.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An unhandled exception occurred.");
-
+                logger.LogError(ex, "Unhandled exception occurred at {Path}: {Message}", context.Request.Path, ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }

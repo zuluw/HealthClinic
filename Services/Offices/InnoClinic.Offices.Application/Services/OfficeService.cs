@@ -1,4 +1,5 @@
-﻿using InnoClinic.Offices.Application.DTOs;
+﻿using FluentValidation;
+using InnoClinic.Offices.Application.DTOs;
 using InnoClinic.Offices.Application.Interfaces;
 using InnoClinic.Offices.Domain.Exceptions;
 using InnoClinic.Offices.Domain.Models;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Offices.Application.Services
 {
-    public class OfficeService(IOfficeRepository repository, ILogger<OfficeService> logger) : IOfficeService
+    public class OfficeService(IOfficeRepository repository, IValidator<OfficeDto> officeValidator, ILogger<OfficeService> logger) : IOfficeService
     {
         public async Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters)
         {
@@ -24,6 +25,13 @@ namespace InnoClinic.Offices.Application.Services
         {
             logger.LogInformation("Creating a new office at address: {Address}", data.Address);
 
+            var validationResult = await officeValidator.ValidateAsync(data);
+            if (!validationResult.IsValid)
+            {
+                logger.LogWarning("Validation failed for office creation at address: {Address}", data.Address);
+                throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            }
+
             var office = new Office
             {
                 Address = data.Address,
@@ -40,6 +48,13 @@ namespace InnoClinic.Offices.Application.Services
         public async Task UpdateAsync(string id, OfficeDto data)
         {
             logger.LogInformation("Updating office {Id}. New address: {Address}", id, data.Address);
+
+            var validationResult = await officeValidator.ValidateAsync(data);
+            if (!validationResult.IsValid)
+            {
+                logger.LogWarning("Validation failed for office update at ID: {Id}", id);
+                throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            }
 
             var existingOffice = await repository.GetByIdAsync(id);
             if (existingOffice == null)
