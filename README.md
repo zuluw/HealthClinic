@@ -14,7 +14,8 @@
 3. Open a terminal in the root directory.
 4. Run the command:
    ```bash
-   docker-compose up -d --build```
+   docker-compose up -d --build
+   ```
 
 ## 🧪 API Testing (Postman)
 The collections in the `/postman` folder are designed to work as a sequence. Follow these steps to initialize all required variables:
