@@ -16,5 +16,17 @@
    ```bash
    docker-compose up -d --build
 
+## API Testing
+Postman collections are located in the `/postman` folder. 
+1. Import collections into Postman.
+2. Create an environment with `base_url_auth` (localhost:8080) and `base_url_offices` (localhost:8082).
+3. Run the **Login** request first to populate access tokens.
+
+## Services
+- **Auth API:** http://localhost:8080/swagger
+- **Offices API:** http://localhost:8082/swagger
+- **Mongo UI:** http://localhost:8081
+```
+
 ---
 *Copyright (c) 2026 Alexandr Mikhalkov*
