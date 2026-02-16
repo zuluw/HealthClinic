@@ -1,0 +1,6 @@
+@InnoClinic.Profiles.Api_HostAddress = http://localhost:5299
+
+GET {{InnoClinic.Profiles.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

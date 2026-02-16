@@ -1,0 +1,27 @@
+services:
+  profiles-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-profiles-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${PROFILES_DB_PASSWORD}
+    ports:
+      - "1434:1433"
+    volumes:
+      - profiles-mssql-data:/var/opt/mssql
+
+  profiles-api:
+    build:
+      context: .
+      dockerfile: InnoClinic.Profiles.Api/Dockerfile
+    container_name: innoclinic-profiles-api
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${PROFILES_DB_CONNECTION}
+    depends_on:
+      - profiles-db
+
+volumes:
+  profiles-mssql-data:
