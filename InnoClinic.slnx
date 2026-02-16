@@ -1,10 +1,20 @@
 <Solution>
-  <Project Path="Services/Authorization/InnoClinic.Auth.Api/InnoClinic.Auth.Api.csproj" />
-  <Project Path="Services/Authorization/InnoClinic.Auth.Application/InnoClinic.Auth.Application.csproj" />
-  <Project Path="Services/Authorization/InnoClinic.Auth.Domain/InnoClinic.Auth.Domain.csproj" />
-  <Project Path="Services/Authorization/InnoClinic.Auth.Infrastructure/InnoClinic.Auth.Infrastructure.csproj" />
-  <Project Path="Services/Offices/InnoClinic.Offices.Api/InnoClinic.Offices.Api.csproj" />
-  <Project Path="Services/Offices/InnoClinic.Offices.Application/InnoClinic.Offices.Application.csproj" />
-  <Project Path="Services/Offices/InnoClinic.Offices.Domain/InnoClinic.Offices.Domain.csproj" />
-  <Project Path="Services/Offices/InnoClinic.Offices.Infrastructure/InnoClinic.Offices.Infrastructure.csproj" />
+  <Folder Name="/Auth/">
+    <Project Path="Services/Authorization/InnoClinic.Auth.Api/InnoClinic.Auth.Api.csproj" />
+    <Project Path="Services/Authorization/InnoClinic.Auth.Application/InnoClinic.Auth.Application.csproj" />
+    <Project Path="Services/Authorization/InnoClinic.Auth.Domain/InnoClinic.Auth.Domain.csproj" />
+    <Project Path="Services/Authorization/InnoClinic.Auth.Infrastructure/InnoClinic.Auth.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Offices/">
+    <Project Path="Services/Offices/InnoClinic.Offices.Api/InnoClinic.Offices.Api.csproj" />
+    <Project Path="Services/Offices/InnoClinic.Offices.Application/InnoClinic.Offices.Application.csproj" />
+    <Project Path="Services/Offices/InnoClinic.Offices.Domain/InnoClinic.Offices.Domain.csproj" />
+    <Project Path="Services/Offices/InnoClinic.Offices.Infrastructure/InnoClinic.Offices.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Profiles/">
+    <Project Path="Services/Profiles/InnoClinic.Profiles.Api/InnoClinic.Profiles.Api.csproj" />
+    <Project Path="Services/Profiles/InnoClinic.Profiles.Application/InnoClinic.Profiles.Application.csproj" />
+    <Project Path="Services/Profiles/InnoClinic.Profiles.Domain/InnoClinic.Profiles.Domain.csproj" />
+    <Project Path="Services/Profiles/InnoClinic.Profiles.Infrastructure/InnoClinic.Profiles.Infrastructure.csproj" />
+  </Folder>
 </Solution>
