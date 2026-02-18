@@ -5,10 +5,10 @@ namespace InnoClinic.Offices.Application.Interfaces
 {
     public interface IOfficeService
     {
-        Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters);
-        Task<Office?> GetByIdAsync(string id);
-        Task<Office> CreateAsync(OfficeDto officeDto);
-        Task UpdateAsync(string id, OfficeDto officeDto);
-        Task DeleteAsync(string id);
+        Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters, CancellationToken ct);
+        Task<Office?> GetByIdAsync(string id, CancellationToken ct);
+        Task<Office> CreateAsync(OfficeDto officeDto, CancellationToken ct);
+        Task UpdateAsync(string id, OfficeDto officeDto, CancellationToken ct);
+        Task DeleteAsync(string id, CancellationToken ct);
     }
 }

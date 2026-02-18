@@ -9,17 +9,17 @@ namespace InnoClinic.Offices.Api.Controllers
     public class OfficesController(IOfficeService officeService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationParameters parameters)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParameters parameters, CancellationToken ct)
         {
             var validParams = parameters with { PageNumber = parameters.PageNumber < 1 ? 1 : parameters.PageNumber };
-            var result = await officeService.GetAllAsync(validParams);
+            var result = await officeService.GetAllAsync(validParams, ct);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(string id, CancellationToken ct)
         {
-            var office = await officeService.GetByIdAsync(id);
+            var office = await officeService.GetByIdAsync(id, ct);
             if (office == null)
             {
                 return NotFound();
@@ -29,24 +29,24 @@ namespace InnoClinic.Offices.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OfficeDto officeDto)
+        public async Task<IActionResult> Create([FromBody] OfficeDto officeDto, CancellationToken ct)
         {
-            var result = await officeService.CreateAsync(officeDto);
+            var result = await officeService.CreateAsync(officeDto, ct);
 
             return Created($"api/offices/{result.Id}", result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto)
+        public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto, CancellationToken ct)
         {
-            await officeService.UpdateAsync(id, officeDto);
+            await officeService.UpdateAsync(id, officeDto, ct);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id, CancellationToken ct)
         {
-            await officeService.DeleteAsync(id);
+            await officeService.DeleteAsync(id, ct);
             return NoContent();
         }
     }

@@ -13,38 +13,38 @@ namespace InnoClinic.Offices.Infrastructure.Repositories
                 .GetDatabase(configuration["MongoDbSettings:DatabaseName"])
                 .GetCollection<Office>("Offices");
 
-        public async Task<(IEnumerable<Office> Items, long TotalCount)> GetAllAsync(PaginationParameters parameters)
+        public async Task<(IEnumerable<Office> Items, long TotalCount)> GetAllAsync(PaginationParameters parameters, CancellationToken ct)
         {
             var filter = Builders<Office>.Filter.Empty;
 
-            var totalCount = await _offices.CountDocumentsAsync(filter);
+            var totalCount = await _offices.CountDocumentsAsync(filter, cancellationToken: ct);
 
             var items = await _offices.Find(filter)
                 .Skip((parameters.PageNumber - 1) * PaginationParameters.PageSize)
                 .Limit(PaginationParameters.PageSize)
-                .ToListAsync();
+                .ToListAsync(ct);
 
             return (items, totalCount);
         }
 
-        public async Task<Office> GetByIdAsync(string id)
+        public async Task<Office> GetByIdAsync(string id, CancellationToken ct)
         {
-            return await _offices.Find(o => o.Id == id).FirstAsync();
+            return await _offices.Find(o => o.Id == id).FirstOrDefaultAsync(ct);
         }
 
-        public async Task CreateAsync(Office office)
+        public async Task CreateAsync(Office office, CancellationToken ct)
         {
-            await _offices.InsertOneAsync(office);
+            await _offices.InsertOneAsync(office, cancellationToken: ct);
         }
 
-        public async Task UpdateAsync(string id, Office office)
+        public async Task UpdateAsync(string id, Office office, CancellationToken ct)
         {
-            await _offices.ReplaceOneAsync(o => o.Id == id, office);
+            await _offices.ReplaceOneAsync(o => o.Id == id, office, cancellationToken: ct);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, CancellationToken ct)
         {
-            await _offices.DeleteOneAsync(o => o.Id == id);
+            await _offices.DeleteOneAsync(o => o.Id == id, ct);
         }
     }
 }
