@@ -46,7 +46,7 @@ namespace InnoClinic.Auth.Application.Services
 
             var user = await userRepository.GetByUserNameAsync(data.UserName, ct);
             
-            if ((user == null) || (!PasswordHasher.VerifyPassword(data.Password, user.PasswordHash)))
+            if ((user is null) || (!PasswordHasher.VerifyPassword(data.Password, user.PasswordHash)))
             {
                 logger.LogWarning("Invalid login attempt for user: {UserName}", data.UserName);
                 throw new UnauthorizedException("Incorrect username or password");
@@ -62,7 +62,7 @@ namespace InnoClinic.Auth.Application.Services
             var userId = JwtProvider.GetUserIdFromToken(data.AccessToken, config["Jwt:Key"]!, config["Jwt:Issuer"]!, config["Jwt:Audience"]!) ?? throw new UnauthorizedException("Invalid token");
             var user = await userRepository.GetByIdAsync(userId, ct);
 
-            if ((user == null) || (user.RefreshToken != data.RefreshToken) || (user.RefreshTokenExpiryTime < DateTime.UtcNow))
+            if ((user is null) || (user.RefreshToken != data.RefreshToken) || (user.RefreshTokenExpiryTime < DateTime.UtcNow))
             {
                 logger.LogWarning("Refresh token validation failed for UserID: {UserId}", userId);
                 throw new UnauthorizedException("Invalid or expired refresh token");
@@ -75,7 +75,7 @@ namespace InnoClinic.Auth.Application.Services
         {
             var user = await userRepository.GetByEmailAsync(email, ct);
 
-            if (user == null)
+            if (user is null)
             {
                 user = new User
                 {
@@ -98,7 +98,7 @@ namespace InnoClinic.Auth.Application.Services
       
             var user = await userRepository.GetByIdAsync(userId, ct);
 
-            if (user == null)
+            if (user is null)
             {
                 logger.LogError("Status change failed. User {UserId} not found", userId);
                 throw new NotFoundException("User not found");

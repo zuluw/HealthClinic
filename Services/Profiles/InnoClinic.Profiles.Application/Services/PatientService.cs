@@ -16,29 +16,50 @@ namespace InnoClinic.Profiles.Application.Services
 
             var validationResult = await validator.ValidateAsync(data, ct);
             if (!validationResult.IsValid)
+            {
+                logger.LogWarning("Validation failed for patient: {LastName}", data.LastName);
                 throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            }
 
-            if (await patientRepository.GetByAccountIdAsync(data.AccountId, ct) != null)
+            var profileResult = await patientRepository.GetByAccountIdAsync(data.AccountId, ct);
+            if (profileResult is not null)
+            {
+                logger.LogWarning("Profile creation failed: AccountId {AccountId} already has a profile", data.AccountId);
                 throw new BadRequestException("Patient profile already exists");
+            }
 
             var patient = mapper.ToEntity(data);
             
             patientRepository.Add(patient);
             await patientRepository.SaveChangesAsync(ct);
 
+            logger.LogInformation("Patient profile created successfully with ID: {Id}", patient.Id);
+
             return mapper.ToResponse(patient);
         }
 
         public async Task<PatientResponseDTO> GetByIdAsync(Guid id, CancellationToken ct)
         {
-            var p = await patientRepository.GetByIdAsync(id, ct) ?? throw new NotFoundException("Patient not found");
-            return mapper.ToResponse(p);
+            var patient = await patientRepository.GetByIdAsync(id, ct);
+
+            if (patient is null)
+            {
+                throw new NotFoundException("Patient not found");
+            }
+
+            return mapper.ToResponse(patient);
         }
 
         public async Task<PatientResponseDTO> GetByAccountIdAsync(Guid accountId, CancellationToken ct)
         {
-            var p = await patientRepository.GetByAccountIdAsync(accountId, ct) ?? throw new NotFoundException("Profile not found");
-            return mapper.ToResponse(p);
+            var patient = await patientRepository.GetByAccountIdAsync(accountId, ct);
+
+            if (patient is null)
+            {
+                throw new NotFoundException("Profile not found");
+            }
+
+            return mapper.ToResponse(patient);
         }
 
         public async Task<IEnumerable<PatientResponseDTO>> GetAllAsync(CancellationToken ct)
@@ -49,18 +70,31 @@ namespace InnoClinic.Profiles.Application.Services
 
         public async Task UpdateAsync(Guid id, PatientRequestDTO data, CancellationToken ct)
         {
-            var p = await patientRepository.GetByIdAsync(id, ct) ?? throw new NotFoundException("Patient not found");
+            var patient = await patientRepository.GetByIdAsync(id, ct);
 
-            mapper.UpdatePatient(data, p);
+            if (patient is null)
+            {
+                logger.LogWarning("Update failed: Patient profile {Id} not found", id);
+                throw new NotFoundException("Patient not found");
+            }
 
-            patientRepository.Update(p);
+            mapper.UpdatePatient(data, patient);
+
+            patientRepository.Update(patient);
             await patientRepository.SaveChangesAsync(ct);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken ct)
         {
-            var p = await patientRepository.GetByIdAsync(id, ct) ?? throw new NotFoundException("Patient not found");
-            patientRepository.Delete(p);
+            var patient = await patientRepository.GetByIdAsync(id, ct);
+
+            if (patient is null)
+            {
+                logger.LogWarning("Delete failed: Patient profile {Id} not found", id);
+                throw new NotFoundException("Patient not found");
+            }
+            
+            patientRepository.Delete(patient);
             await patientRepository.SaveChangesAsync(ct);
         }
     }

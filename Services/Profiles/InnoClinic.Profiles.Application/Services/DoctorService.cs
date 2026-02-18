@@ -12,7 +12,7 @@ namespace InnoClinic.Profiles.Application.Services
     {
         public async Task<DoctorResponseDTO> CreateAsync(DoctorRequestDTO data, CancellationToken ct)
         {
-            logger.LogInformation("Attempting to create doctor profile for AccountId: {AccountId}", data.AccountId);
+            logger.LogInformation("Creating doctor profile for AccountId: {AccountId}", data.AccountId);
 
             var validationResult = await doctorValidator.ValidateAsync(data, ct);
             if (!validationResult.IsValid)
@@ -21,16 +21,20 @@ namespace InnoClinic.Profiles.Application.Services
                 throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
             }
 
-            if (await doctorRepository.GetByAccountIdAsync(data.AccountId, ct) != null)
+            var profileResult = await doctorRepository.GetByAccountIdAsync(data.AccountId, ct);
+            if (profileResult is not null)
             {
                 logger.LogWarning("Profile creation failed: AccountId {AccountId} already has a profile", data.AccountId);
-                throw new BadRequestException("Profile already exists");
+                throw new BadRequestException("Doctor profile already exists");
             }
 
             var doctor = mapper.ToEntity(data);
 
             var specs = await doctorRepository.GetSpecializationsByIdsAsync(data.SpecializationIds, ct);
-            foreach (var s in specs) doctor.Specializations.Add(s);
+            foreach (var s in specs)
+            {
+                doctor.Specializations.Add(s);
+            }
 
             doctorRepository.Add(doctor);
             await doctorRepository.SaveChangesAsync(ct);
@@ -42,16 +46,24 @@ namespace InnoClinic.Profiles.Application.Services
 
         public async Task<DoctorResponseDTO> GetByIdAsync(Guid id, CancellationToken ct)
         {
-            var doctor = await doctorRepository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+            var doctor = await doctorRepository.GetByIdAsync(id, ct);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
 
             return mapper.ToResponse(doctor);
         }
 
         public async Task<DoctorResponseDTO> GetByAccountIdAsync(Guid accountId, CancellationToken ct)
         {
-            var doctor = await doctorRepository.GetByAccountIdAsync(accountId, ct)
-                ?? throw new NotFoundException("Profile not found");
+            var doctor = await doctorRepository.GetByAccountIdAsync(accountId, ct);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Profile not found");
+            }
 
             return mapper.ToResponse(doctor);
         }
@@ -72,8 +84,12 @@ namespace InnoClinic.Profiles.Application.Services
 
         public async Task UpdateAsync(Guid id, DoctorRequestDTO data, CancellationToken ct)
         {
-            var doctor = await doctorRepository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+            var doctor = await doctorRepository.GetByIdAsync(id, ct);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
 
             mapper.UpdateDoctor(data, doctor);
             doctorRepository.Update(doctor);
@@ -84,8 +100,12 @@ namespace InnoClinic.Profiles.Application.Services
 
         public async Task DeleteAsync(Guid id, CancellationToken ct)
         {
-            var doctor = await doctorRepository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+            var doctor = await doctorRepository.GetByIdAsync(id, ct);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
 
             doctorRepository.Delete(doctor);
             await doctorRepository.SaveChangesAsync(ct);
@@ -94,8 +114,12 @@ namespace InnoClinic.Profiles.Application.Services
 
         public async Task ChangeStatusAsync(Guid id, DoctorStatus newStatus, CancellationToken ct)
         {
-            var doctor = await doctorRepository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+            var doctor = await doctorRepository.GetByIdAsync(id, ct);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
 
             doctor.Status = newStatus;
             await doctorRepository.SaveChangesAsync(ct);

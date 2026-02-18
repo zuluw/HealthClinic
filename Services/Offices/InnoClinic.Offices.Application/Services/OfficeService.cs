@@ -22,7 +22,7 @@ namespace InnoClinic.Offices.Application.Services
         public async Task<OfficeResponseDTO?> GetByIdAsync(string id, CancellationToken ct)
         {
             var office = await repository.GetByIdAsync(id, ct);
-            return office != null ? mapper.ToResponse(office) : null;
+            return office is null ? null : mapper.ToResponse(office);
         }
 
         public async Task<OfficeResponseDTO> CreateAsync(OfficeRequestDTO data, CancellationToken ct)
@@ -56,7 +56,7 @@ namespace InnoClinic.Offices.Application.Services
             }
 
             var existingOffice = await repository.GetByIdAsync(id, ct);
-            if (existingOffice == null)
+            if (existingOffice is null)
             {
                 logger.LogError("Update failed. Office {Id} not found", id);
                 throw new NotFoundException("Office not found");
@@ -73,7 +73,7 @@ namespace InnoClinic.Offices.Application.Services
             logger.LogWarning("Attempting to delete office with ID: {Id}", id);
 
             var existingOffice = await repository.GetByIdAsync(id, ct);
-            if (existingOffice == null)
+            if (existingOffice is null)
             {
                 throw new NotFoundException("Office not found");
             }

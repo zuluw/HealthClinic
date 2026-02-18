@@ -20,7 +20,7 @@ namespace InnoClinic.Offices.Api.Controllers
         public async Task<IActionResult> GetById(string id, CancellationToken ct)
         {
             var office = await officeService.GetByIdAsync(id, ct);
-            if (office == null)
+            if (office is null)
             {
                 return NotFound();
             }
@@ -32,8 +32,7 @@ namespace InnoClinic.Offices.Api.Controllers
         public async Task<IActionResult> Create([FromBody] OfficeRequestDTO officeDto, CancellationToken ct)
         {
             var result = await officeService.CreateAsync(officeDto, ct);
-
-            return Created($"api/offices/{result.Id}", result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
