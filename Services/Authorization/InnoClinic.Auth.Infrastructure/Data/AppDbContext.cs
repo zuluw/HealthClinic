@@ -3,20 +3,18 @@ using InnoClinic.Auth.Domain.Models;
 
 namespace InnoClinic.Auth.Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
                 entity.Property(e => e.UserName).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.UserName).IsUnique();
                 entity.Property(e => e.PasswordHash).IsRequired();

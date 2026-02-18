@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.Profiles.Infrastructure.Data
 {
-    public class ProfilesDbContext(DbContextOptions<ProfilesDbContext> options) : DbContext(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<Patient> Patients => Set<Patient>();

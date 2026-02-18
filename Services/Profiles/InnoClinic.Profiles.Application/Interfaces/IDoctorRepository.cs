@@ -9,7 +9,7 @@ namespace InnoClinic.Profiles.Application.Interfaces
         Task<IEnumerable<Doctor>> GetBySpecializationAsync(Guid specializationId, CancellationToken ct);
         Task<IEnumerable<Specialization>> GetSpecializationsByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct);
         Task<IEnumerable<Doctor>> GetAllAsync(CancellationToken ct);
-        Task AddAsync(Doctor doctor, CancellationToken ct);
+        void Add(Doctor doctor);
         void Update(Doctor doctor);
         void Delete(Doctor doctor);
         Task SaveChangesAsync(CancellationToken ct);

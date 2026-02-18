@@ -13,24 +13,23 @@ namespace InnoClinic.Auth.Api.Controllers
     public class AuthController(IAuthService authService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO data)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO data, CancellationToken ct)
         {
-            var result = await authService.RegisterAsync(data);
+            var result = await authService.RegisterAsync(data, ct);
             return Ok(result);
-            //return Created("api/auth/profile", result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO data)
+        public async Task<IActionResult> Login([FromBody] LoginDTO data, CancellationToken ct)
         {
-            var result = await authService.LoginAsync(data);
+            var result = await authService.LoginAsync(data, ct);
             return Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] JwtDTO data)
+        public async Task<IActionResult> Refresh([FromBody] JwtDTO data, CancellationToken ct)
         {
-            var result = await authService.RefreshAsync(data);
+            var result = await authService.RefreshAsync(data, ct);
             return Ok(result);
         }
 
@@ -42,7 +41,7 @@ namespace InnoClinic.Auth.Api.Controllers
         }
 
         [HttpGet("google-response")]
-        public async Task<IActionResult> GoogleResponse()
+        public async Task<IActionResult> GoogleResponse(CancellationToken ct)
         {
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
             if (!result.Succeeded)
@@ -54,14 +53,14 @@ namespace InnoClinic.Auth.Api.Controllers
             var firstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
             var lastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
 
-            var authResponse = await authService.GoogleAuthAsync(email!, firstName, lastName);
+            var authResponse = await authService.GoogleAuthAsync(email!, firstName, lastName, ct);
             return Ok(authResponse);
         }
 
         [HttpPatch("{id}/status")]
-        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] UserStatus newStatus)
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] UserStatus newStatus, CancellationToken ct)
         {
-            await authService.ChangeStatusAsync(id, newStatus);
+            await authService.ChangeStatusAsync(id, newStatus, ct);
             return NoContent();
         }
     }

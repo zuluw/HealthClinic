@@ -4,11 +4,11 @@ namespace InnoClinic.Auth.Application.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User?> GetByUserNameAsync(string userName);
-        Task<User?> GetByEmailAsync(string email);
-        Task<User> GetByIdAsync(Guid id);
-        Task<bool> ExistsByUserNameAsync(string userName);
+        Task<User?> GetByUserNameAsync(string userName, CancellationToken ct);
+        Task<User?> GetByEmailAsync(string email, CancellationToken ct);
+        Task<User> GetByIdAsync(Guid id, CancellationToken ct);
+        Task<bool> ExistsByUserNameAsync(string userName, CancellationToken ct);
         void Add(User user);
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken ct);
     }
 }   

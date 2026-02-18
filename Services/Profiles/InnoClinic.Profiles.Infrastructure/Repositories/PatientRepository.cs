@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.Profiles.Infrastructure.Repositories;
 
-public class PatientRepository(ProfilesDbContext context) : IPatientRepository
+public class PatientRepository(AppDbContext context) : IPatientRepository
 {
     public async Task<Patient?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -22,9 +22,9 @@ public class PatientRepository(ProfilesDbContext context) : IPatientRepository
         return await context.Patients.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Patient patient, CancellationToken cancellationToken)
+    public void Add(Patient patient)
     {
-        await context.Patients.AddAsync(patient, cancellationToken);
+        context.Patients.Add(patient);
     }
 
     public void Update(Patient patient)

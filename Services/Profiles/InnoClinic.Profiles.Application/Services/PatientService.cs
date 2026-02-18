@@ -30,7 +30,7 @@ namespace InnoClinic.Profiles.Application.Services
                 PhoneNumber = data.PhoneNumber
             };
 
-            await patientRepository.AddAsync(patient, ct);
+            patientRepository.Add(patient);
             await patientRepository.SaveChangesAsync(ct);
 
             return new PatientResponseDTO(patient.Id, patient.AccountId, patient.FirstName,

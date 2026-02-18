@@ -41,7 +41,7 @@ namespace InnoClinic.Profiles.Application.Services
             var specs = await doctorRepository.GetSpecializationsByIdsAsync(data.SpecializationIds, ct);
             foreach (var s in specs) doctor.Specializations.Add(s);
 
-            await doctorRepository.AddAsync(doctor, ct);
+            doctorRepository.Add(doctor);
             await doctorRepository.SaveChangesAsync(ct);
 
             logger.LogInformation("Doctor profile created successfully with ID: {Id}", doctor.Id);
