@@ -7,8 +7,16 @@ namespace InnoClinic.Profiles.Application.Validators
     {
         public DoctorRequestValidator()
         {
-            RuleFor(x => x.FirstName).NotEmpty().MaximumLength(50);
-            RuleFor(x => x.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.FirstName)
+              .NotEmpty().WithMessage("First name must not be empty")
+              .MaximumLength(50).WithMessage("First name must not be more than 50 characters");
+
+            RuleFor(x => x.LastName)
+                .NotEmpty().WithMessage("Last name must not be empty")
+                .MaximumLength(50).WithMessage("Last name must not be more than 50 characters");
+
+            RuleFor(x => x.MiddleName)
+                .MaximumLength(50).WithMessage("Middle name must not be more than 50 characters");
 
             RuleFor(x => x.DateOfBirth)
                 .LessThan(DateOnly.FromDateTime(DateTime.Now.AddYears(-18)))

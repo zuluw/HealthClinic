@@ -8,24 +8,28 @@ namespace InnoClinic.Auth.Application.Validators
         public RegisterValidator()
         {
             RuleFor(u => u.UserName)
-                .Length(5, 20).WithMessage("The nickname must be between 5 and 20");
+                .NotEmpty().WithMessage("Username must not be empty")
+                .Length(5, 20).WithMessage("Username must be between 5 and 20");
 
-            RuleFor(u => u.FirstName)
-                .NotEmpty().WithMessage("The first name cannot be empty");
+            RuleFor(x => x.FirstName)
+               .NotEmpty().WithMessage("First name must not be empty")
+               .MaximumLength(50).WithMessage("First name must not be more than 50 characters");
 
-            RuleFor(u => u.LastName)
-                .NotEmpty().WithMessage("The last name cannot be empty");
+            RuleFor(x => x.LastName)
+                .NotEmpty().WithMessage("Last name must not be empty")
+                .MaximumLength(50).WithMessage("Last name must not be more than 50 characters");
 
             RuleFor(u => u.Password)
-                .MinimumLength(10).WithMessage("The password minimum length is 10")
-                .Matches(@"\d+").WithMessage("The passowrd must contain digits")
-                .Matches(@"[A-Z]+").WithMessage("The password must contain capital letter")
-                .Matches(@"[!@#$%^&*()_+';.,№:?]").WithMessage("The password must contain special character");
+                .MinimumLength(10).WithMessage("Password minimum length is 10")
+                .Matches(@"\d+").WithMessage("Password must contain digits")
+                .Matches(@"[A-Z]+").WithMessage("Password must contain capital letter")
+                .Matches(@"[!@#$%^&*()_+';.,№:?]").WithMessage("Password must contain special character");
 
             RuleFor(u => u.Email)
-                .EmailAddress().WithMessage("Incorrect email address");
+                .NotEmpty().WithMessage("Email address must not be empty")
+                .EmailAddress().WithMessage("Incorrect email address")
+                .MaximumLength(200).WithMessage("Email address must not be more than 200 characters");
 
         }
     }
-
 }
