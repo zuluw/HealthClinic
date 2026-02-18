@@ -5,9 +5,9 @@ namespace InnoClinic.Auth.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> RegisterAsync(RegisterDTO data, CancellationToken ct);
-        Task<AuthResponseDTO> LoginAsync(LoginDTO data, CancellationToken ct);
-        Task<AuthResponseDTO> RefreshAsync(JwtDTO data, CancellationToken ct);
+        Task<bool> RegisterAsync(RegisterRequestDTO data, CancellationToken ct);
+        Task<AuthResponseDTO> LoginAsync(LoginRequestDTO data, CancellationToken ct);
+        Task<AuthResponseDTO> RefreshAsync(RefreshRequestDTO data, CancellationToken ct);
         Task<AuthResponseDTO> GoogleAuthAsync(string email, string firstName, string lastName, CancellationToken ct);
         Task ChangeStatusAsync(Guid userId, UserStatus newStatus, CancellationToken ct);
     }

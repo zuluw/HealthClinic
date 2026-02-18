@@ -14,5 +14,4 @@ namespace InnoClinic.Profiles.Application.Interfaces
         void Delete(Doctor doctor);
         Task SaveChangesAsync(CancellationToken ct);
     }
-
 }

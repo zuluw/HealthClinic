@@ -1,6 +1,7 @@
 using FluentValidation;
 using InnoClinic.Profiles.Api.Middleware;
 using InnoClinic.Profiles.Application.Interfaces;
+using InnoClinic.Profiles.Application.Mappings;
 using InnoClinic.Profiles.Application.Services;
 using InnoClinic.Profiles.Application.Validators; 
 using InnoClinic.Profiles.Infrastructure.Data;    
@@ -19,7 +20,7 @@ builder.Host.UseSerilog();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ProfilesDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<DoctorRequestValidator>();
+builder.Services.AddSingleton<ProfileMapper>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +40,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ProfilesDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
         context.Database.Migrate();
@@ -57,6 +59,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseSerilogRequestLogging(); 
+app.UseSerilogRequestLogging(); 
 app.MapControllers();
 app.Run();

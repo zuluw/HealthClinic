@@ -1,6 +1,7 @@
 using FluentValidation;
 using InnoClinic.Offices.Api.Middleware;
 using InnoClinic.Offices.Application.Interfaces;
+using InnoClinic.Offices.Application.Mappings;
 using InnoClinic.Offices.Application.Services;
 using InnoClinic.Offices.Application.Validators;
 using InnoClinic.Offices.Infrastructure.Repositories;
@@ -37,6 +38,8 @@ MongoDbConfig.Configure();
 builder.Services.AddValidatorsFromAssemblyContaining<OfficeValidator>();
 builder.Services.AddScoped<IOfficeRepository, OfficeRepository>();
 builder.Services.AddScoped<IOfficeService, OfficeService>();
+
+builder.Services.AddSingleton<OfficeMapper>();
 
 var app = builder.Build();
 

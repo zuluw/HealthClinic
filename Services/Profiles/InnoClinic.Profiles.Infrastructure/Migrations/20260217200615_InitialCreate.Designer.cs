@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InnoClinic.Profiles.Infrastructure.Migrations
 {
-    [DbContext(typeof(ProfilesDbContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20260217200615_InitialCreate")]
     partial class InitialCreate
     {

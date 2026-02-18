@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using InnoClinic.Profiles.Application.DTOs;
 using InnoClinic.Profiles.Application.Interfaces;
+using InnoClinic.Profiles.Application.Mappings;
 using InnoClinic.Profiles.Domain.Exceptions;
 using InnoClinic.Profiles.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Profiles.Application.Services
 {
-    public class PatientService(IPatientRepository patientRepository, IValidator<PatientRequestDTO> validator, ILogger<PatientService> logger) : IPatientService
+    public class PatientService(IPatientRepository patientRepository, IValidator<PatientRequestDTO> validator, ILogger<PatientService> logger, ProfileMapper mapper) : IPatientService
     {
         public async Task<PatientResponseDTO> CreateAsync(PatientRequestDTO data, CancellationToken ct)
         {
@@ -20,50 +21,37 @@ namespace InnoClinic.Profiles.Application.Services
             if (await patientRepository.GetByAccountIdAsync(data.AccountId, ct) != null)
                 throw new BadRequestException("Patient profile already exists");
 
-            var patient = new Patient
-            {
-                AccountId = data.AccountId,
-                FirstName = data.FirstName,
-                LastName = data.LastName,
-                MiddleName = data.MiddleName,
-                DateOfBirth = data.DateOfBirth,
-                PhoneNumber = data.PhoneNumber
-            };
-
+            var patient = mapper.ToEntity(data);
+            
             patientRepository.Add(patient);
             await patientRepository.SaveChangesAsync(ct);
 
-            return new PatientResponseDTO(patient.Id, patient.AccountId, patient.FirstName,
-                patient.LastName, patient.MiddleName, patient.DateOfBirth, patient.PhoneNumber);
+            return mapper.ToResponse(patient);
         }
 
         public async Task<PatientResponseDTO> GetByIdAsync(Guid id, CancellationToken ct)
         {
             var p = await patientRepository.GetByIdAsync(id, ct) ?? throw new NotFoundException("Patient not found");
-            return new PatientResponseDTO(p.Id, p.AccountId, p.FirstName, p.LastName, p.MiddleName, p.DateOfBirth, p.PhoneNumber);
+            return mapper.ToResponse(p);
         }
 
         public async Task<PatientResponseDTO> GetByAccountIdAsync(Guid accountId, CancellationToken ct)
         {
             var p = await patientRepository.GetByAccountIdAsync(accountId, ct) ?? throw new NotFoundException("Profile not found");
-            return new PatientResponseDTO(p.Id, p.AccountId, p.FirstName, p.LastName, p.MiddleName, p.DateOfBirth, p.PhoneNumber);
+            return mapper.ToResponse(p);
         }
 
         public async Task<IEnumerable<PatientResponseDTO>> GetAllAsync(CancellationToken ct)
         {
             var patients = await patientRepository.GetAllAsync(ct);
-            return patients.Select(p => new PatientResponseDTO(p.Id, p.AccountId, p.FirstName,
-                p.LastName, p.MiddleName, p.DateOfBirth, p.PhoneNumber));
+            return patients.Select(mapper.ToResponse);
         }
 
         public async Task UpdateAsync(Guid id, PatientRequestDTO data, CancellationToken ct)
         {
             var p = await patientRepository.GetByIdAsync(id, ct) ?? throw new NotFoundException("Patient not found");
 
-            p.FirstName = data.FirstName;
-            p.LastName = data.LastName;
-            p.MiddleName = data.MiddleName;
-            p.PhoneNumber = data.PhoneNumber;
+            mapper.UpdatePatient(data, p);
 
             patientRepository.Update(p);
             await patientRepository.SaveChangesAsync(ct);

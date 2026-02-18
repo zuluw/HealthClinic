@@ -29,7 +29,7 @@ namespace InnoClinic.Offices.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OfficeDto officeDto, CancellationToken ct)
+        public async Task<IActionResult> Create([FromBody] OfficeRequestDTO officeDto, CancellationToken ct)
         {
             var result = await officeService.CreateAsync(officeDto, ct);
 
@@ -37,7 +37,7 @@ namespace InnoClinic.Offices.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] OfficeDto officeDto, CancellationToken ct)
+        public async Task<IActionResult> Update(string id, [FromBody] OfficeRequestDTO officeDto, CancellationToken ct)
         {
             await officeService.UpdateAsync(id, officeDto, ct);
             return NoContent();

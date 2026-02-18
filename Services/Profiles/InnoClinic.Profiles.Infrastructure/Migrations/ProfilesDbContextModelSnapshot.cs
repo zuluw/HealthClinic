@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InnoClinic.Profiles.Infrastructure.Migrations
 {
-    [DbContext(typeof(ProfilesDbContext))]
+    [DbContext(typeof(AppDbContext))]
     partial class ProfilesDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

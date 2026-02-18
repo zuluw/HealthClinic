@@ -3,7 +3,7 @@ using InnoClinic.Auth.Application.DTOs;
 
 namespace InnoClinic.Auth.Application.Validators
 {
-    public class RegisterValidator : AbstractValidator<RegisterDTO>
+    public class RegisterValidator : AbstractValidator<RegisterRequestDTO>
     {
         public RegisterValidator()
         {

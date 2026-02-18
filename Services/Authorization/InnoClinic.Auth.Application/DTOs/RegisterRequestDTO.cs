@@ -1,6 +1,6 @@
 ﻿namespace InnoClinic.Auth.Application.DTOs
 {
-    public record RegisterDTO(
+    public record RegisterRequestDTO(
         string UserName,
         string Password,
         string FirstName,

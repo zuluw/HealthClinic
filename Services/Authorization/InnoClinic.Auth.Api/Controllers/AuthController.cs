@@ -13,21 +13,21 @@ namespace InnoClinic.Auth.Api.Controllers
     public class AuthController(IAuthService authService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO data, CancellationToken ct)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDTO data, CancellationToken ct)
         {
             var result = await authService.RegisterAsync(data, ct);
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO data, CancellationToken ct)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO data, CancellationToken ct)
         {
             var result = await authService.LoginAsync(data, ct);
             return Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] JwtDTO data, CancellationToken ct)
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDTO data, CancellationToken ct)
         {
             var result = await authService.RefreshAsync(data, ct);
             return Ok(result);

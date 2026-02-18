@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using InnoClinic.Profiles.Application.DTOs;
 using InnoClinic.Profiles.Application.Interfaces;
+using InnoClinic.Profiles.Application.Mappings;
 using InnoClinic.Profiles.Domain.Exceptions;
 using InnoClinic.Profiles.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Profiles.Application.Services
 {
-    public class DoctorService(IDoctorRepository doctorRepository, IValidator<DoctorRequestDTO> doctorValidator, ILogger<DoctorService> logger) : IDoctorService
+    public class DoctorService(IDoctorRepository doctorRepository, IValidator<DoctorRequestDTO> doctorValidator, ILogger<DoctorService> logger, ProfileMapper mapper) : IDoctorService
     {
         public async Task<DoctorResponseDTO> CreateAsync(DoctorRequestDTO data, CancellationToken ct)
         {
@@ -26,17 +27,7 @@ namespace InnoClinic.Profiles.Application.Services
                 throw new BadRequestException("Profile already exists");
             }
 
-            var doctor = new Doctor
-            {
-                AccountId = data.AccountId,
-                FirstName = data.FirstName,
-                LastName = data.LastName,
-                MiddleName = data.MiddleName,
-                DateOfBirth = data.DateOfBirth,
-                CareerStartDate = data.CareerStartDate,
-                OfficeId = data.OfficeId,
-                Status = DoctorStatus.AtWork
-            };
+            var doctor = mapper.ToEntity(data);
 
             var specs = await doctorRepository.GetSpecializationsByIdsAsync(data.SpecializationIds, ct);
             foreach (var s in specs) doctor.Specializations.Add(s);
@@ -46,11 +37,7 @@ namespace InnoClinic.Profiles.Application.Services
 
             logger.LogInformation("Doctor profile created successfully with ID: {Id}", doctor.Id);
 
-            return new DoctorResponseDTO(
-                doctor.Id, doctor.AccountId, doctor.FirstName, doctor.LastName, doctor.MiddleName,
-                doctor.DateOfBirth, doctor.CareerStartDate, doctor.Status.ToString(),
-                doctor.Specializations.Select(s => s.Name), doctor.OfficeId
-            );
+            return mapper.ToResponse(doctor);
         }
 
         public async Task<DoctorResponseDTO> GetByIdAsync(Guid id, CancellationToken ct)
@@ -58,11 +45,7 @@ namespace InnoClinic.Profiles.Application.Services
             var doctor = await doctorRepository.GetByIdAsync(id, ct)
                 ?? throw new NotFoundException("Doctor not found");
 
-            return new DoctorResponseDTO(
-                doctor.Id, doctor.AccountId, doctor.FirstName, doctor.LastName, doctor.MiddleName,
-                doctor.DateOfBirth, doctor.CareerStartDate, doctor.Status.ToString(),
-                doctor.Specializations.Select(s => s.Name), doctor.OfficeId
-            );
+            return mapper.ToResponse(doctor);
         }
 
         public async Task<DoctorResponseDTO> GetByAccountIdAsync(Guid accountId, CancellationToken ct)
@@ -70,33 +53,21 @@ namespace InnoClinic.Profiles.Application.Services
             var doctor = await doctorRepository.GetByAccountIdAsync(accountId, ct)
                 ?? throw new NotFoundException("Profile not found");
 
-            return new DoctorResponseDTO(
-                doctor.Id, doctor.AccountId, doctor.FirstName, doctor.LastName, doctor.MiddleName,
-                doctor.DateOfBirth, doctor.CareerStartDate, doctor.Status.ToString(),
-                doctor.Specializations.Select(s => s.Name), doctor.OfficeId
-            );
+            return mapper.ToResponse(doctor);
         }
 
         public async Task<IEnumerable<DoctorResponseDTO>> GetBySpecializationAsync(Guid specializationId, CancellationToken ct)
         {
             var doctors = await doctorRepository.GetBySpecializationAsync(specializationId, ct);
 
-            return doctors.Select(d => new DoctorResponseDTO(
-                d.Id, d.AccountId, d.FirstName, d.LastName, d.MiddleName,
-                d.DateOfBirth, d.CareerStartDate, d.Status.ToString(),
-                d.Specializations.Select(s => s.Name), d.OfficeId
-            ));
+            return doctors.Select(mapper.ToResponse);
         }
 
         public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync(CancellationToken ct)
         {
             var doctors = await doctorRepository.GetAllAsync(ct);
 
-            return doctors.Select(d => new DoctorResponseDTO(
-                d.Id, d.AccountId, d.FirstName, d.LastName, d.MiddleName,
-                d.DateOfBirth, d.CareerStartDate, d.Status.ToString(),
-                d.Specializations.Select(s => s.Name), d.OfficeId
-            ));
+            return doctors.Select(mapper.ToResponse);
         }
 
         public async Task UpdateAsync(Guid id, DoctorRequestDTO data, CancellationToken ct)
@@ -104,14 +75,10 @@ namespace InnoClinic.Profiles.Application.Services
             var doctor = await doctorRepository.GetByIdAsync(id, ct)
                 ?? throw new NotFoundException("Doctor not found");
 
-            doctor.FirstName = data.FirstName;
-            doctor.LastName = data.LastName;
-            doctor.MiddleName = data.MiddleName;
-            doctor.CareerStartDate = data.CareerStartDate;
-            doctor.OfficeId = data.OfficeId;
-
+            mapper.UpdateDoctor(data, doctor);
             doctorRepository.Update(doctor);
             await doctorRepository.SaveChangesAsync(ct);
+            
             logger.LogInformation("Doctor profile {Id} updated", id);
         }
 

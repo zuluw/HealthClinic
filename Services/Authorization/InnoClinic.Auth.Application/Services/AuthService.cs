@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using InnoClinic.Auth.Application.DTOs;
 using InnoClinic.Auth.Application.Interfaces;
+using InnoClinic.Auth.Application.Mappings;
 using InnoClinic.Auth.Application.Utils;
 using InnoClinic.Auth.Domain.Exceptions;
 using InnoClinic.Auth.Domain.Models;
@@ -9,9 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Auth.Application.Services
 {
-    public class AuthService(IUserRepository userRepository, IConfiguration config, IValidator<RegisterDTO> registerValidator, ILogger<AuthService> logger) : IAuthService
+    public class AuthService(IUserRepository userRepository, IConfiguration config, IValidator<RegisterRequestDTO> registerValidator, ILogger<AuthService> logger, AuthMapper mapper) : IAuthService
     {
-        public async Task<bool> RegisterAsync(RegisterDTO data, CancellationToken ct)
+        public async Task<bool> RegisterAsync(RegisterRequestDTO data, CancellationToken ct)
         {
             logger.LogInformation("Attempting to register user: {UserName}", data.UserName);
 
@@ -29,14 +30,8 @@ namespace InnoClinic.Auth.Application.Services
                 throw new BadRequestException("User with the same username already exists");
             }
 
-            var newUser = new User
-            {
-                UserName = data.UserName,
-                FirstName = data.FirstName,
-                LastName = data.LastName,
-                Email = data.Email,
-                PasswordHash = PasswordHasher.HashPassword(data.Password),
-            };
+            var newUser = mapper.ToEntity(data);
+            newUser.PasswordHash = PasswordHasher.HashPassword(data.Password);
 
             userRepository.Add(newUser);
             await userRepository.SaveChangesAsync(ct);
@@ -45,7 +40,7 @@ namespace InnoClinic.Auth.Application.Services
             return true;
         }
 
-        public async Task<AuthResponseDTO> LoginAsync(LoginDTO data, CancellationToken ct)
+        public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO data, CancellationToken ct)
         {
             logger.LogInformation("Login attempt for user: {UserName}", data.UserName);
 
@@ -60,7 +55,7 @@ namespace InnoClinic.Auth.Application.Services
             return await CreateAuthResponse(user, ct, "Login successful");
         }
 
-        public async Task<AuthResponseDTO> RefreshAsync(JwtDTO data, CancellationToken ct)
+        public async Task<AuthResponseDTO> RefreshAsync(RefreshRequestDTO data, CancellationToken ct)
         {
             logger.LogInformation("Refreshing tokens for AccessToken: {Token}...", data.AccessToken[..10]);
 
@@ -84,7 +79,6 @@ namespace InnoClinic.Auth.Application.Services
             {
                 user = new User
                 {
-                    Id = Guid.NewGuid(),
                     UserName = email,
                     Email = email,
                     FirstName = firstName,
@@ -125,7 +119,7 @@ namespace InnoClinic.Auth.Application.Services
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await userRepository.SaveChangesAsync(ct);
 
-            return new AuthResponseDTO(user.Id, user.UserName, accessToken, refreshToken, message);
+            return mapper.ToResponse(user, accessToken, refreshToken, message);
         }
     }
 }

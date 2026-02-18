@@ -1,27 +1,31 @@
 ﻿using FluentValidation;
 using InnoClinic.Offices.Application.DTOs;
 using InnoClinic.Offices.Application.Interfaces;
+using InnoClinic.Offices.Application.Mappings;
 using InnoClinic.Offices.Domain.Exceptions;
 using InnoClinic.Offices.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Offices.Application.Services
 {
-    public class OfficeService(IOfficeRepository repository, IValidator<OfficeDto> officeValidator, ILogger<OfficeService> logger) : IOfficeService
+    public class OfficeService(IOfficeRepository repository, IValidator<OfficeRequestDTO> officeValidator, ILogger<OfficeService> logger, OfficeMapper mapper) : IOfficeService
     {
-        public async Task<PagedResult<Office>> GetAllAsync(PaginationParameters parameters, CancellationToken ct)
+        public async Task<PagedResult<OfficeResponseDTO>> GetAllAsync(PaginationParameters parameters, CancellationToken ct)
         {
             var (items, totalCount) = await repository.GetAllAsync(parameters, ct);
 
-            return new PagedResult<Office>(items, parameters.PageNumber, PaginationParameters.PageSize, totalCount);
+            var result = mapper.ToResponseList(items);
+
+            return new PagedResult<OfficeResponseDTO>(result, parameters.PageNumber, PaginationParameters.PageSize, totalCount);
         }
 
-        public async Task<Office?> GetByIdAsync(string id, CancellationToken ct)
+        public async Task<OfficeResponseDTO?> GetByIdAsync(string id, CancellationToken ct)
         {
-            return await repository.GetByIdAsync(id, ct);
+            var office = await repository.GetByIdAsync(id, ct);
+            return office != null ? mapper.ToResponse(office) : null;
         }
 
-        public async Task<Office> CreateAsync(OfficeDto data, CancellationToken ct)
+        public async Task<OfficeResponseDTO> CreateAsync(OfficeRequestDTO data, CancellationToken ct)
         {
             logger.LogInformation("Creating a new office at address: {Address}", data.Address);
 
@@ -32,20 +36,15 @@ namespace InnoClinic.Offices.Application.Services
                 throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
             }
 
-            var office = new Office
-            {
-                Address = data.Address,
-                RegistryPhoneNumber = data.RegistryPhoneNumber,
-                IsActive = data.IsActive
-            };
+            var office = mapper.ToEntity(data);
 
             await repository.CreateAsync(office, ct);
 
             logger.LogInformation("Office successfully created with ID: {Id}", office.Id);
-            return office;
+            return mapper.ToResponse(office);
         }
 
-        public async Task UpdateAsync(string id, OfficeDto data, CancellationToken ct)
+        public async Task UpdateAsync(string id, OfficeRequestDTO data, CancellationToken ct)
         {
             logger.LogInformation("Updating office {Id}. New address: {Address}", id, data.Address);
 
@@ -63,9 +62,7 @@ namespace InnoClinic.Offices.Application.Services
                 throw new NotFoundException("Office not found");
             }
 
-            existingOffice.Address = data.Address;
-            existingOffice.RegistryPhoneNumber = data.RegistryPhoneNumber;
-            existingOffice.IsActive = data.IsActive;
+            mapper.UpdateEntity(data, existingOffice);
 
             await repository.UpdateAsync(id, existingOffice, ct);
             logger.LogInformation("Office {Id} information updated", id);

@@ -3,7 +3,7 @@ using InnoClinic.Offices.Application.DTOs;
 
 namespace InnoClinic.Offices.Application.Validators;
 
-public class OfficeValidator : AbstractValidator<OfficeDto>
+public class OfficeValidator : AbstractValidator<OfficeRequestDTO>
 {
     public OfficeValidator()
     {
