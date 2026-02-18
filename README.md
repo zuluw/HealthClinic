@@ -19,7 +19,7 @@
    ```bash
    docker-compose up -d --build
    ```
-   *Note: Migrations for SQL services (Auth, Profiles) will be applied automatically on startup.*
+> **Note**: Migrations for SQL services (Auth, Profiles) will be applied automatically on startup.*
    
 ## 🧪 API Testing (Postman)
 1. **Import**: Import the JSON collection files from the `/postman` folder into Postman.
