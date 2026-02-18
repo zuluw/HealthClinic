@@ -1,6 +1,6 @@
 ﻿namespace InnoClinic.Profiles.Application.DTOs
 {
-    public record DoctorReponseDTO(
+    public record DoctorResponseDTO(
         Guid Id,
         Guid AccountId,
         string FirstName,

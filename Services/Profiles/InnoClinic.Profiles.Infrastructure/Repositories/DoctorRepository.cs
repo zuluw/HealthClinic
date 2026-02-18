@@ -14,12 +14,33 @@ public class DoctorRepository(ProfilesDbContext context) : IDoctorRepository
             .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
+    public async Task<Doctor?> GetByAccountIdAsync(Guid accountId, CancellationToken ct)
+    {
+        return await context.Doctors
+            .Include(d => d.Specializations)
+            .FirstOrDefaultAsync(d => d.AccountId == accountId, ct);
+    }
+
     public async Task<IEnumerable<Doctor>> GetBySpecializationAsync(Guid specializationId, CancellationToken cancellationToken)
     {
         return await context.Doctors
             .Include(d => d.Specializations)
             .Where(d => d.Specializations.Any(s => s.Id == specializationId))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Specialization>> GetSpecializationsByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct)
+    {
+        return await context.Specializations
+            .Where(s => ids.Contains(s.Id))
+            .ToListAsync(ct);
+    }
+
+    public async Task<IEnumerable<Doctor>> GetAllAsync(CancellationToken ct)
+    {
+        return await context.Doctors
+            .Include(d => d.Specializations)
+            .ToListAsync(ct);
     }
 
     public async Task AddAsync(Doctor doctor, CancellationToken cancellationToken)

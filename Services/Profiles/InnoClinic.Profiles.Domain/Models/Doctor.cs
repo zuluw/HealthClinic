@@ -19,7 +19,7 @@
         public DateOnly DateOfBirth { get; set; }
 
         public Guid OfficeId { get; set; }
-        public DateOnly CareerStartYear { get; set; }
+        public DateOnly CareerStartDate { get; set; }
         public DoctorStatus Status { get; set; } = DoctorStatus.AtWork;
 
         public virtual ICollection<Specialization> Specializations { get; set; } = new List<Specialization>();

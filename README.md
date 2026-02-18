@@ -4,7 +4,10 @@
 
 ## 🛠 Tech Stack
 - **Backend:** .NET 10, ASP.NET Core
-- **Databases:** MS SQL Server (EF Core), MongoDB
+- **Databases:** 
+  - **MS SQL Server / Azure SQL:** Auth API, Profiles API (Entity Framework Core)
+  - **MongoDB:** Offices API
+- **Architecture:** Clean Architecture, Microservices
 - **Logging:** Serilog
 - **DevOps:** Docker, Docker Compose
 
@@ -16,28 +19,28 @@
    ```bash
    docker-compose up -d --build
    ```
-
+   *Note: Migrations for SQL services (Auth, Profiles) will be applied automatically on startup.*
+   
 ## 🧪 API Testing (Postman)
-The collections in the `/postman` folder are designed to work as a sequence. Follow these steps to initialize all required variables:
+1. **Import**: Import the JSON collection files from the `/postman` folder into Postman.
+2. **Configure & Run**:
+   - Select the desired collection and click **Run collection**.
+   - In the **Runner** tab, configure your execution settings (select specific requests, adjust the order, or set delays).
+   - Click the **Run [Collection Name]** button to start the automated flow.
+3. **Automation Logic**:
+   - All essential data, such as access tokens and newly created resource IDs, are automatically captured and stored in **Collection Variables** during execution.
+   - Subsequent requests (Read, Update, Delete) automatically retrieve these values, ensuring a seamless testing process.
 
-1. **Import**: Import the JSON collection files into Postman.
-2. **Global Variables**: variables are pre-configured in the **Collection Variables**.
-3. **Step 1: Authentication (Auth API)**
-   - Run the **Login** request. 
-   - This will automatically save data to the collection variables.
-4. **Step 2: Initialize Data (Offices API)**
-   - Run the **Get Offices** (or similar GET) request.
-   - This will automatically save data to the collection variables.
-5. **Ready to Test**: Now all other requests (Create, Update, Delete) will have the necessary IDs and Tokens pre-filled.
+> **Note**: If you prefer to execute requests individually, ensure that authentication and resource creation steps are performed first to populate the necessary collection variables.
 
-> **Tip**: Check the **Variables** tab of the collection to see the current values of `first_office_id`, `access_token`, etc.
 
-> **Note**: If you changed the default ports in `docker-compose.yml`, update the corresponding variables in the **Variables** tab of the imported collection.
-
-## Services
-- **Auth API:** [http://localhost:8080/swagger](http://localhost:8080/swagger)
-- **Offices API:** [http://localhost:8082/swagger](http://localhost:8082/swagger)
-- **Mongo UI:** [http://localhost:8081](http://localhost:8081)
+## 🔗 Service Map
+| Service | URL | Database |
+| :--- | :--- | :--- |
+| **Auth API** | [http://localhost:8080/swagger](http://localhost:8080/swagger) | MS SQL |
+| **Offices API** | [http://localhost:8082/swagger](http://localhost:8082/swagger) | MongoDB |
+| **Profiles API** | [http://localhost:8083/swagger](http://localhost:8083/swagger) | MS SQL |
+| **Mongo UI** | [http://localhost:8085](http://localhost:8085) | - |
 
 ---
 *Copyright (c) 2026 Alexandr Mikhalkov*
