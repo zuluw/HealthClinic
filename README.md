@@ -37,10 +37,10 @@
 ## 🔗 Service Map
 | Service | URL | Database |
 | :--- | :--- | :--- |
-| **Auth API** | [http://localhost:8080/swagger](http://localhost:8080/swagger) | MS SQL |
-| **Offices API** | [http://localhost:8082/swagger](http://localhost:8082/swagger) | MongoDB |
-| **Profiles API** | [http://localhost:8083/swagger](http://localhost:8083/swagger) | MS SQL |
-| **Mongo UI** | [http://localhost:8085](http://localhost:8085) | - |
+| **Auth API** | [http://localhost:8080/swagger](http://localhost:8080/swagger/index.html) | MS SQL |
+| **Offices API** | [http://localhost:8082/swagger](http://localhost:8082/swagger/index.html) | MongoDB |
+| **Profiles API** | [http://localhost:8083/swagger](http://localhost:8083/swagger/index.html) | MS SQL |
+| **Mongo UI** | [http://localhost:8081](http://localhost:8081) | - |
 
 ---
 *Copyright (c) 2026 Alexandr Mikhalkov*
