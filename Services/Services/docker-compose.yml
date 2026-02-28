@@ -1,0 +1,27 @@
+services:
+  services-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-services-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${SERVICES_DB_PASSWORD}
+    ports:
+      - "1435:1433"
+    volumes:
+      - services-mssql-data:/var/opt/mssql
+
+  services-api:
+    build:
+      context: .
+      dockerfile: InnoClinic.Services.Api/Dockerfile
+    container_name: innoclinic-services-api
+    ports:
+      - "8084:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${SERVICES_DB_CONNECTION}
+    depends_on:
+      - services-db
+
+volumes:
+  services-mssql-data:

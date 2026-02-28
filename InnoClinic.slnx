@@ -17,4 +17,10 @@
     <Project Path="Services/Profiles/InnoClinic.Profiles.Domain/InnoClinic.Profiles.Domain.csproj" />
     <Project Path="Services/Profiles/InnoClinic.Profiles.Infrastructure/InnoClinic.Profiles.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Services/Services/InnoClinic.Services.Api/InnoClinic.Services.Api.csproj" />
+    <Project Path="Services/Services/InnoClinic.Services.Application/InnoClinic.Services.Application.csproj" />
+    <Project Path="Services/Services/InnoClinic.Services.Domain/InnoClinic.Services.Domain.csproj" />
+    <Project Path="Services/Services/InnoClinic.Services.Infrastructure/InnoClinic.Services.Infrastructure.csproj" />
+  </Folder>
 </Solution>
