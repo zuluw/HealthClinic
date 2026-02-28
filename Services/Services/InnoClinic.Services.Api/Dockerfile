@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Копируем файлы проектов (пути относительно контекста, который мы укажем в compose)
 COPY ["InnoClinic.Services.Api/InnoClinic.Services.Api.csproj", "InnoClinic.Services.Api/"]
 COPY ["InnoClinic.Services.Application/InnoClinic.Services.Application.csproj", "InnoClinic.Services.Application/"]
 COPY ["InnoClinic.Services.Domain/InnoClinic.Services.Domain.csproj", "InnoClinic.Services.Domain/"]
