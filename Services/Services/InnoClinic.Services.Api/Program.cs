@@ -1,4 +1,10 @@
+using FluentValidation;
+using InnoClinic.Services.Api.Middleware;
+using InnoClinic.Services.Application.Interfaces;
+using InnoClinic.Services.Application.Mappings;
+using InnoClinic.Services.Application.Services;
 using InnoClinic.Services.Infrastructure.Data;
+using InnoClinic.Services.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -12,8 +18,15 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<IClinicService, ClinicService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<IClinicService>();
+builder.Services.AddSingleton<ServiceMapper>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -34,6 +47,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,5 +57,4 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.MapControllers();
-
 app.Run();
