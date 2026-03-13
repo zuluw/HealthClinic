@@ -9,6 +9,8 @@ services:
       - "1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
+    networks: 
+      - innoclinic-network
 
   auth-api:
     build:
@@ -24,5 +26,10 @@ services:
       - ConnectionStrings__DefaultConnection=${AUTH_DB_CONNECTION}
     depends_on:
       - auth-db
+    networks:
+      - innoclinic-network
 volumes:
   mssql-data:
+networks:
+  innoclinic-network:
+    external: true
