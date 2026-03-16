@@ -9,6 +9,7 @@ namespace InnoClinic.Services.Application.Interfaces
         Task<List<Specialization>> GetSpecializationsWithServicesAsync(ServiceCategory category, CancellationToken ct);
         Task<bool> SpecializationExistsAsync(string name, CancellationToken ct);
         void AddSpecialization(Specialization specialization);
+        Task<Specialization?> GetSpecializationWithServicesByIdAsync(Guid id, CancellationToken ct);
         Task SaveChangesAsync(CancellationToken ct);
     }
 }

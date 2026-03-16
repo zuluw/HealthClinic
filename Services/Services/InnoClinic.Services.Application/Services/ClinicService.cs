@@ -49,5 +49,31 @@ namespace InnoClinic.Services.Application.Services
 
             return specialization.Id;
         }
+
+        public async Task UpdateSpecializationStatusAsync(Guid id, bool isActive, CancellationToken ct)
+        {
+            logger.LogInformation("Changing status for specialization {Id} to {Status}", id, isActive);
+
+            var specialization = await repository.GetSpecializationWithServicesByIdAsync(id, ct);
+
+            if (specialization == null)
+            {
+                logger.LogWarning("Specialization {Id} not found", id);
+                throw new NotFoundException("Specialization not found");
+            }
+
+            specialization.IsActive = isActive;
+
+            if (!isActive)
+            {
+                foreach (var service in specialization.Services)
+                {
+                    service.IsActive = false;
+                }
+                logger.LogInformation("Cascade deactivated {Count} services for specialization {Id}", specialization.Services.Count, id);
+            }
+
+            await repository.SaveChangesAsync(ct);
+        }
     }
 }
