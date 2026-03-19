@@ -8,4 +8,5 @@ public interface IClinicService
     Task<List<SpecializationResponseDTO>> GetServicesAsync(ServiceCategory category, CancellationToken ct);
     Task<Guid> CreateSpecializationAsync(SpecializationRequestDTO data, CancellationToken ct);
     Task UpdateSpecializationStatusAsync(Guid id, bool isActive, CancellationToken ct);
+    Task UpdateSpecializationAsync(Guid id, UpdateSpecializationRequestDTO data, CancellationToken ct);
 }

@@ -31,5 +31,12 @@ namespace InnoClinic.Services.Api.Controllers
             await clinicService.UpdateSpecializationStatusAsync(id, isActive, ct);
             return NoContent();
         }
+
+        [HttpPut("specializations/{id}")]
+        public async Task<IActionResult> UpdateSpecialization(Guid id, [FromBody] UpdateSpecializationRequestDTO data, CancellationToken ct)
+        {
+            await clinicService.UpdateSpecializationAsync(id, data, ct);
+            return NoContent();
+        }
     }
 }

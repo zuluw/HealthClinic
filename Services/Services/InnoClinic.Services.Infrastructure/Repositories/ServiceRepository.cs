@@ -44,6 +44,16 @@ namespace InnoClinic.Services.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.Id == id, ct);
         }
 
+        public void AddService(Service service)
+        {
+            context.Services.Add(service);
+        }
+
+        public void DeleteService(Service service)
+        {
+            context.Services.Remove(service);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);
