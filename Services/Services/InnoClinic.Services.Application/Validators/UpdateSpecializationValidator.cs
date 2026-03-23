@@ -8,7 +8,7 @@ namespace InnoClinic.Services.Application.Validators
         public UpdateSpecializationValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name must not be empty")
+                .NotEmpty().WithMessage("Please, enter the name")
                 .MaximumLength(150);
 
             RuleFor(x => x.Services)
@@ -17,14 +17,15 @@ namespace InnoClinic.Services.Application.Validators
             RuleForEach(x => x.Services).ChildRules(service =>
             {
                 service.RuleFor(s => s.ServiceName)
-                    .NotEmpty().WithMessage("Service name is required")
+                    .NotEmpty().WithMessage("Please, enter the name")
                     .MaximumLength(200);
 
                 service.RuleFor(s => s.Price)
-                    .GreaterThanOrEqualTo(0).WithMessage("Price must not be negative");
+                    .NotEmpty().WithMessage("Please, enter the price")
+                    .GreaterThan(0).WithMessage("You've entered an invalid price"); 
 
                 service.RuleFor(s => s.Category)
-                    .IsInEnum().WithMessage("Invalid service category");
+                    .IsInEnum().WithMessage("Please, choose the service category");
             });
         }
     }

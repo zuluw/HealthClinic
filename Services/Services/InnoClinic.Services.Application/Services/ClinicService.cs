@@ -164,5 +164,23 @@ namespace InnoClinic.Services.Application.Services
                 .Select(mapper.ToSpecializationListDto)
                 .ToList();
         }
+
+        public async Task UpdateServiceStatusAsync(Guid id, bool isActive, CancellationToken ct)
+        {
+            logger.LogInformation("Changing status for service {Id} to {Status}", id, isActive);
+
+            var service = await repository.GetServiceByIdAsync(id, ct);
+
+            if (service == null)
+            {
+                logger.LogWarning("Service {Id} not found", id);
+                throw new NotFoundException("Service not found");
+            }
+
+            service.IsActive = isActive;
+
+            await repository.SaveChangesAsync(ct);
+            logger.LogInformation("Status for service {Id} successfully updated to {Status}", id, isActive);
+        }
     }
 }

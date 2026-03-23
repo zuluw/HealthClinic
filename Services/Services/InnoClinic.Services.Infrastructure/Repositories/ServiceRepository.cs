@@ -61,6 +61,11 @@ namespace InnoClinic.Services.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
+        public async Task<Service?> GetServiceByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);
