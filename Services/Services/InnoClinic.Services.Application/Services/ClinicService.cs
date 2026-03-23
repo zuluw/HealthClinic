@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Services.Application.Services
 {
-    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator, IValidator<UpdateSpecializationRequestDTO> updateValidator) : IClinicService
+    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator, IValidator<UpdateSpecializationRequestDTO> updateSpecializationValidator, IValidator<UpdateServiceRequestDTO> updateServiceValidator) : IClinicService
     {
         public async Task<List<SpecializationResponseDTO>> GetServicesAsync(ServiceCategory category, CancellationToken ct)
         {
@@ -81,7 +81,7 @@ namespace InnoClinic.Services.Application.Services
         {
             logger.LogInformation("Attempting to update specialization {Id}", id);
 
-            var validationResult = await updateValidator.ValidateAsync(data, ct);
+            var validationResult = await updateSpecializationValidator.ValidateAsync(data, ct);
             if (!validationResult.IsValid)
             {
                 throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
@@ -181,6 +181,43 @@ namespace InnoClinic.Services.Application.Services
 
             await repository.SaveChangesAsync(ct);
             logger.LogInformation("Status for service {Id} successfully updated to {Status}", id, isActive);
+        }
+
+        public async Task UpdateServiceAsync(Guid id, UpdateServiceRequestDTO data, CancellationToken ct)
+        {
+            logger.LogInformation("Attempting to update service {Id}", id);
+
+            var validationResult = await updateServiceValidator.ValidateAsync(data, ct);
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            }
+
+            var service = await repository.GetServiceByIdAsync(id, ct);
+            if (service == null)
+            {
+                throw new NotFoundException("Service not found");
+            }
+
+            mapper.UpdateService(data, service);
+
+            await repository.SaveChangesAsync(ct);
+            logger.LogInformation("Service {Id} successfully updated", id);
+        }
+
+        public async Task<ServiceResponseDTO> GetServiceByIdAsync(Guid id, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching details for service {Id}", id);
+
+            var service = await repository.GetServiceByIdAsync(id, ct);
+
+            if (service == null)
+            {
+                logger.LogWarning("Service {Id} not found", id);
+                throw new NotFoundException("Service not found");
+            }
+
+            return mapper.ToServiceDto(service);
         }
     }
 }
