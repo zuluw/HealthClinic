@@ -13,7 +13,8 @@ namespace InnoClinic.Services.Application.Mappings
         {
             return new SpecializationResponseDTO(
                 spec.Id,
-                spec.Name,
+                spec.Name, 
+                spec.IsActive, 
                 spec.Services.Select(ToServiceDto).ToList()
             );
         }
@@ -24,5 +25,6 @@ namespace InnoClinic.Services.Application.Mappings
         [MapperIgnoreTarget(nameof(Specialization.Services))]
         [MapperIgnoreTarget(nameof(Specialization.Id))]
         public partial void UpdateSpecialization(UpdateSpecializationRequestDTO dto, Specialization entity);
+        public partial SpecializationListDTO ToSpecializationListDto(Specialization spec);
     }
 }

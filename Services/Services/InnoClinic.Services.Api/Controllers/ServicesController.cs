@@ -21,8 +21,7 @@ namespace InnoClinic.Services.Api.Controllers
         public async Task<IActionResult> CreateSpecialization([FromBody] SpecializationRequestDTO data, CancellationToken ct)
         {
             var result = await clinicService.CreateSpecializationAsync(data, ct);
-            return StatusCode(201, result);
-            //return CreatedAtAction(nameof(GetServices), new { result }, result);
+            return CreatedAtAction(nameof(GetSpecializationById), new { id = result }, result);
         }
 
         [HttpPatch("specializations/{id}/status")]
@@ -37,6 +36,20 @@ namespace InnoClinic.Services.Api.Controllers
         {
             await clinicService.UpdateSpecializationAsync(id, data, ct);
             return NoContent();
+        }
+
+        [HttpGet("specializations/{id}")]
+        public async Task<ActionResult<SpecializationResponseDTO>> GetSpecializationById(Guid id, CancellationToken ct)
+        {
+            var result = await clinicService.GetSpecializationByIdAsync(id, ct);
+            return Ok(result);
+        }
+
+        [HttpGet("specializations")]
+        public async Task<ActionResult<List<SpecializationListDTO>>> GetAllSpecializations(CancellationToken ct)
+        {
+            var result = await clinicService.GetAllSpecializationsAsync(ct);
+            return Ok(result);
         }
     }
 }

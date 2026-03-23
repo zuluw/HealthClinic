@@ -138,5 +138,31 @@ namespace InnoClinic.Services.Application.Services
             await repository.SaveChangesAsync(ct);
             logger.LogInformation("Specialization {Id} updated successfully", id);
         }
+
+        public async Task<SpecializationResponseDTO> GetSpecializationByIdAsync(Guid id, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching details for specialization {Id}", id);
+
+            var specialization = await repository.GetSpecializationWithServicesByIdAsync(id, ct);
+
+            if (specialization == null)
+            {
+                logger.LogWarning("Specialization {Id} not found", id);
+                throw new NotFoundException("Specialization not found");
+            }
+
+            return mapper.ToSpecializationDto(specialization);
+        }
+
+        public async Task<List<SpecializationListDTO>> GetAllSpecializationsAsync(CancellationToken ct)
+        {
+            logger.LogInformation("Fetching all specializations for the table view");
+
+            var specializations = await repository.GetAllSpecializationsAsync(ct);
+
+            return specializations
+                .Select(mapper.ToSpecializationListDto)
+                .ToList();
+        }
     }
 }
