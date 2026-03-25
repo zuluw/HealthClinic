@@ -24,5 +24,12 @@ namespace InnoClinic.Services.Api.Controllers
             return StatusCode(201, result);
             //return CreatedAtAction(nameof(GetServices), new { result }, result);
         }
+
+        [HttpPatch("specializations/{id}/status")]
+        public async Task<IActionResult> UpdateSpecializationStatus(Guid id, [FromBody] bool isActive, CancellationToken ct)
+        {
+            await clinicService.UpdateSpecializationStatusAsync(id, isActive, ct);
+            return NoContent();
+        }
     }
 }
