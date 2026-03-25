@@ -54,6 +54,13 @@ namespace InnoClinic.Services.Infrastructure.Repositories
             context.Services.Remove(service);
         }
 
+        public async Task<List<Specialization>> GetAllSpecializationsAsync(CancellationToken ct)
+        {
+            return await context.Specializations
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);
