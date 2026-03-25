@@ -9,6 +9,8 @@ services:
       - "1435:1433"
     volumes:
       - services-mssql-data:/var/opt/mssql
+    networks: 
+      - innoclinic-network
 
   services-api:
     build:
@@ -22,6 +24,11 @@ services:
       - ConnectionStrings__DefaultConnection=${SERVICES_DB_CONNECTION}
     depends_on:
       - services-db
+    networks: 
+      - innoclinic-network
 
 volumes:
   services-mssql-data:
+networks:
+  innoclinic-network:
+    external: true

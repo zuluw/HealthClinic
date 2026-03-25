@@ -1,0 +1,29 @@
+services:
+  logs-db:
+    image: mongo:latest
+    container_name: innoclinic-logs-db
+    ports:
+      - "27018:27017"
+    networks:
+      - innoclinic-network
+    volumes:
+      - logs_data:/data/db
+
+  logs-ui:
+    image: mongo-express:latest
+    container_name: innoclinic-logs-ui
+    ports:
+      - "8085:8081"
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://logs-db:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    networks:
+      - innoclinic-network
+    depends_on:
+      - logs-db
+volumes:
+  logs_data:
+networks:
+  innoclinic-network:
+    external: true

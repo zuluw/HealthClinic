@@ -88,7 +88,10 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        context.Database.Migrate();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
     }
     catch (Exception ex)
     {

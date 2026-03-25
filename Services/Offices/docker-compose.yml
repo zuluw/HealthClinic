@@ -10,6 +10,8 @@ services:
     volumes:
       - mongo-data:/data/db
       - ./InnoClinic.Offices.Api/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks: 
+      - innoclinic-network
 
   mongo-ui:
     image: mongo-express:latest
@@ -23,6 +25,8 @@ services:
       - ME_CONFIG_MONGODB_URL=mongodb://${OFFICES_DB_USER}:${OFFICES_DB_PASSWORD}@offices-db:27017/
     depends_on:
       - offices-db
+    networks: 
+      - innoclinic-network
 
   offices-api:
     build:
@@ -37,6 +41,11 @@ services:
       - MongoDbSettings__DatabaseName=${OFFICES_DB_NAME}
     depends_on:
       - offices-db
+    networks: 
+      - innoclinic-network
 
 volumes:
   mongo-data:
+networks:
+  innoclinic-network:
+    external: true
