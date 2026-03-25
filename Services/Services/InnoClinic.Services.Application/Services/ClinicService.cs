@@ -4,11 +4,12 @@ using InnoClinic.Services.Application.Interfaces;
 using InnoClinic.Services.Application.Mappings;
 using InnoClinic.Services.Domain.Enums;
 using InnoClinic.Services.Domain.Exceptions;
+using InnoClinic.Services.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Services.Application.Services
 {
-    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator) : IClinicService
+    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator, IValidator<UpdateSpecializationRequestDTO> updateValidator) : IClinicService
     {
         public async Task<List<SpecializationResponseDTO>> GetServicesAsync(ServiceCategory category, CancellationToken ct)
         {
@@ -74,6 +75,68 @@ namespace InnoClinic.Services.Application.Services
             }
 
             await repository.SaveChangesAsync(ct);
+        }
+
+        public async Task UpdateSpecializationAsync(Guid id, UpdateSpecializationRequestDTO data, CancellationToken ct)
+        {
+            logger.LogInformation("Attempting to update specialization {Id}", id);
+
+            var validationResult = await updateValidator.ValidateAsync(data, ct);
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            }
+
+            var specialization = await repository.GetSpecializationWithServicesByIdAsync(id, ct);
+            if (specialization == null)
+            {
+                throw new NotFoundException("Specialization not found");
+            }
+
+            mapper.UpdateSpecialization(data, specialization);
+            
+            var requestServicesIds = data.Services.Where(x => x.Id.HasValue).Select(x => x.Id!.Value).ToList();
+            var servicesToRemove = specialization.Services.Where(s => !requestServicesIds.Contains(s.Id)).ToList();
+
+            foreach (var service in servicesToRemove)
+            {
+                repository.DeleteService(service);
+            }
+
+            foreach (var serviceDto in data.Services)
+            {
+                if (serviceDto.Id.HasValue)
+                {
+                    var existing = specialization.Services.FirstOrDefault(s => s.Id == serviceDto.Id);
+                    if (existing != null)
+                    {
+                        existing.ServiceName = serviceDto.ServiceName;
+                        existing.Price = serviceDto.Price;
+                        existing.IsActive = serviceDto.IsActive;
+                        existing.Category = serviceDto.Category;
+                    }
+                    else
+                    {
+                        throw new BadRequestException($"Service with ID {serviceDto.Id} not found.");
+                    }
+                }
+                else
+                {
+                    var newService = new Service
+                    {
+                        ServiceName = serviceDto.ServiceName,
+                        Price = serviceDto.Price,
+                        IsActive = serviceDto.IsActive,
+                        Category = serviceDto.Category,
+                        SpecializationId = specialization.Id
+                    };
+
+                    repository.AddService(newService);
+                }
+            }
+
+            await repository.SaveChangesAsync(ct);
+            logger.LogInformation("Specialization {Id} updated successfully", id);
         }
     }
 }

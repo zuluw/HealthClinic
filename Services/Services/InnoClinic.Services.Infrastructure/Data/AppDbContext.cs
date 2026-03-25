@@ -32,7 +32,7 @@ namespace InnoClinic.Services.Infrastructure.Data
                 entity.HasOne(s => s.Specialization)
                     .WithMany(sp => sp.Services)
                     .HasForeignKey(s => s.SpecializationId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasQueryFilter(s => s.IsActive);
             });

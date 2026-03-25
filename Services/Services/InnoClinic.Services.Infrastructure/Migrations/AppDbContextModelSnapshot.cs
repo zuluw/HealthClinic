@@ -105,7 +105,7 @@ namespace InnoClinic.Services.Infrastructure.Migrations
                     b.HasOne("InnoClinic.Services.Domain.Models.Specialization", "Specialization")
                         .WithMany("Services")
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Specialization");

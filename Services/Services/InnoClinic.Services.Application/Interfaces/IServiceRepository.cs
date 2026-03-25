@@ -10,6 +10,8 @@ namespace InnoClinic.Services.Application.Interfaces
         Task<bool> SpecializationExistsAsync(string name, CancellationToken ct);
         void AddSpecialization(Specialization specialization);
         Task<Specialization?> GetSpecializationWithServicesByIdAsync(Guid id, CancellationToken ct);
+        void AddService(Service service);
+        void DeleteService(Service service);
         Task SaveChangesAsync(CancellationToken ct);
     }
 }
