@@ -25,6 +25,12 @@ namespace InnoClinic.Services.Application.Mappings
         [MapperIgnoreTarget(nameof(Specialization.Services))]
         [MapperIgnoreTarget(nameof(Specialization.Id))]
         public partial void UpdateSpecialization(UpdateSpecializationRequestDTO dto, Specialization entity);
+        
         public partial SpecializationListDTO ToSpecializationListDto(Specialization spec);
+        
+        [MapperIgnoreTarget(nameof(Service.Id))]
+        [MapperIgnoreTarget(nameof(Service.SpecializationId))]
+        [MapperIgnoreTarget(nameof(Service.Specialization))]
+        public partial void UpdateService(UpdateServiceRequestDTO dto, Service entity);
     }
 }

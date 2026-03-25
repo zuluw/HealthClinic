@@ -58,5 +58,19 @@ namespace InnoClinic.Services.Api.Controllers
             await clinicService.UpdateServiceStatusAsync(id, isActive, ct);
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateService(Guid id, [FromBody] UpdateServiceRequestDTO data, CancellationToken ct)
+        {
+            await clinicService.UpdateServiceAsync(id, data, ct);
+            return NoContent();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ServiceResponseDTO>> GetServiceById(Guid id, CancellationToken ct)
+        {
+            var result = await clinicService.GetServiceByIdAsync(id, ct);
+            return Ok(result);
+        }
     }
 }

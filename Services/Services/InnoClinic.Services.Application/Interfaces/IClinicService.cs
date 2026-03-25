@@ -12,4 +12,6 @@ public interface IClinicService
     Task<SpecializationResponseDTO> GetSpecializationByIdAsync(Guid id, CancellationToken ct);
     Task<List<SpecializationListDTO>> GetAllSpecializationsAsync(CancellationToken ct);
     Task UpdateServiceStatusAsync(Guid id, bool isActive, CancellationToken ct);
+    Task UpdateServiceAsync(Guid id, UpdateServiceRequestDTO data, CancellationToken ct);
+    Task<ServiceResponseDTO> GetServiceByIdAsync(Guid id, CancellationToken ct);
 }
