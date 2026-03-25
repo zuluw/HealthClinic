@@ -6,4 +6,5 @@ namespace InnoClinic.Services.Application.Interfaces;
 public interface IClinicService
 {
     Task<List<SpecializationResponseDTO>> GetServicesAsync(ServiceCategory category, CancellationToken ct);
+    Task<Guid> CreateSpecializationAsync(SpecializationRequestDTO data, CancellationToken ct);
 }

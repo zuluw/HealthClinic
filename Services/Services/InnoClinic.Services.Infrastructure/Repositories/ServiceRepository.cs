@@ -26,6 +26,16 @@ namespace InnoClinic.Services.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
+        public async Task<bool> SpecializationExistsAsync(string name, CancellationToken ct)
+        {
+            return await context.Specializations.AnyAsync(s => s.Name == name, ct);
+        }
+
+        public void AddSpecialization(Specialization specialization)
+        {
+            context.Specializations.Add(specialization);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);

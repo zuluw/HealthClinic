@@ -16,5 +16,8 @@ namespace InnoClinic.Services.Application.Mappings
                 spec.Services.Select(ToServiceDto).ToList()
             );
         }
+
+        public partial Specialization ToEntity(SpecializationRequestDTO dto);
+        public partial Service ToEntity(ServiceRequestDTO dto);
     }
 }

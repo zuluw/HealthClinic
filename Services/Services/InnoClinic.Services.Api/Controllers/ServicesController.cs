@@ -1,4 +1,5 @@
-﻿using InnoClinic.Services.Application.Interfaces;
+﻿using InnoClinic.Services.Application.DTOs;
+using InnoClinic.Services.Application.Interfaces;
 using InnoClinic.Services.Application.Services;
 using InnoClinic.Services.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,14 @@ namespace InnoClinic.Services.Api.Controllers
         {
             var result = await clinicService.GetServicesAsync(category, ct);
             return Ok(result);
+        }
+
+        [HttpPost("specializations")]
+        public async Task<IActionResult> CreateSpecialization([FromBody] SpecializationRequestDTO data, CancellationToken ct)
+        {
+            var result = await clinicService.CreateSpecializationAsync(data, ct);
+            return StatusCode(201, result);
+            //return CreatedAtAction(nameof(GetServices), new { result }, result);
         }
     }
 }
