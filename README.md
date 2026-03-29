@@ -5,7 +5,7 @@
 ## 🛠 Tech Stack
 - **Backend:** .NET 10, ASP.NET Core
 - **Databases:** 
-  - **MS SQL Server / Azure SQL:** Auth API, Profiles API (Entity Framework Core)
+  - **MS SQL Server / Azure SQL:** Auth API, Profiles API, Services API (Entity Framework Core)
   - **MongoDB:** Offices API
 - **Architecture:** Clean Architecture, Microservices
 - **Logging:** Serilog
@@ -40,7 +40,9 @@
 | **Auth API** | [http://localhost:8080/swagger](http://localhost:8080/swagger/index.html) | MS SQL |
 | **Offices API** | [http://localhost:8082/swagger](http://localhost:8082/swagger/index.html) | MongoDB |
 | **Profiles API** | [http://localhost:8083/swagger](http://localhost:8083/swagger/index.html) | MS SQL |
-| **Mongo UI** | [http://localhost:8081](http://localhost:8081) | - |
+| **Services API** | [http://localhost:8084/swagger](http://localhost:8084/swagger/index.html) | MS SQL |
+| **Logs DB** | [http://localhost:8085](http://localhost:8085) | MongoDB |
+| **Mongo UI (Offices API)** | [http://localhost:8081](http://localhost:8081) | - |
 
 ---
 *Copyright (c) 2026 Alexandr Mikhalkov*

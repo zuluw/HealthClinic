@@ -1,0 +1,811 @@
+{
+  "info": {
+    "_postman_id": "edd90be2-e244-4e56-b47c-c40276d53648",
+    "name": "InnoClinic_Services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49723158",
+    "_collection_link": "https://go.postman.co/collection/49723158-edd90be2-e244-4e56-b47c-c40276d53648?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "/api/services?category=1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "if (res[0]?.services?.[0]?.id) {\r",
+              "    pm.collectionVariables.set(\"serviceId\", res[0].services[0].id);\r",
+              "} else if (res[0]?.id) {\r",
+              "    pm.collectionVariables.set(\"serviceId\", res[0].id);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services?category=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services?category=2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/services?category=2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\r",
+              "\r",
+              "const specId = pm.response.json(); \r",
+              "pm.collectionVariables.set(\"specializationId\", specId);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Ophthalmology\",\r\n  \"isActive\": true,\r\n  \"services\": [\r\n    {\r\n      \"serviceName\": \"Eye Examination\",\r\n      \"price\": 150.00,\r\n      \"isActive\": true,\r\n      \"category\": 1\r\n    },\r\n    {\r\n      \"serviceName\": \"Vision Correction\",\r\n      \"price\": 300.50,\r\n      \"isActive\": true,\r\n      \"category\": 2\r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations_invalid_name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"\",\r\n  \"isActive\": true,\r\n  \"services\": [\r\n    { \"serviceName\": \"Test\", \"price\": 10, \"isActive\": true, \"category\": 1 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations_invalid_service",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Surgery\",\r\n  \"isActive\": true,\r\n  \"services\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations_invalid_price",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Therapy\",\r\n  \"isActive\": true,\r\n  \"services\": [\r\n    { \"serviceName\": \"Bad Price Service\", \"price\": -50, \"isActive\": true, \"category\": 1 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services?category=1 Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "const specId = pm.collectionVariables.get(\"specializationId\");\r",
+              "const foundSpec = res.find(s => s.id === specId);\r",
+              "\r",
+              "if (foundSpec && foundSpec.services.length > 0) {\r",
+              "    const realId = foundSpec.services[0].id;\r",
+              "    pm.collectionVariables.set(\"realServiceId\", realId);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/services?category=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/{{newSpecializationId}}/status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "false",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/{{specializationId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "{{specializationId}}",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/00000000-0000-0000-0000-000000000000/status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "true",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/00000000-0000-0000-0000-000000000000/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "00000000-0000-0000-0000-000000000000",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/{{specializationId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Cardiology Updated\",\r\n  \"isActive\": true,\r\n  \"services\": [\r\n    {\r\n      \"id\": \"{{realServiceId}}\", \r\n      \"serviceName\": \"Consultation with cardiologist\",\r\n      \"price\": 200.00, \r\n      \"isActive\": true,\r\n      \"category\": 1\r\n    },\r\n    {\r\n      \"id\": null,\r\n      \"serviceName\": \"NEW Heart Scan\",\r\n      \"price\": 350.00,\r\n      \"isActive\": true,\r\n      \"category\": 1\r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/{{specializationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "{{specializationId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/{{specializationId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"\", \r\n  \"isActive\": true,\r\n  \"services\": [\r\n    { \"id\": null, \"serviceName\": \"Test\", \"price\": 10, \"isActive\": true, \"category\": 1 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/{{specializationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "{{specializationId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/{{specializationId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/{{specializationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "{{specializationId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations/00000000-0000-0000-0000-000000000000_invalid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations/00000000-0000-0000-0000-000000000000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations",
+            "00000000-0000-0000-0000-000000000000"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/specializations",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/services/specializations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/{{realServiceId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/services/{{realServiceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "{{realServiceId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/{{realServiceId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"serviceName\": \"Updated MRI Scan\",\r\n  \"price\": 1250.50,\r\n  \"isActive\": true,\r\n  \"category\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/{{realServiceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "{{realServiceId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/{{realServiceId}}_invalid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"serviceName\": \"\",\r\n  \"price\": -10.00,\r\n  \"isActive\": true,\r\n  \"category\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/{{realServiceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "{{realServiceId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/services/{{realServiceId}}/status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "false",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/services/{{realServiceId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            "{{realServiceId}}",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "serviceId",
+      "value": ""
+    },
+    {
+      "key": "specializationId",
+      "value": ""
+    },
+    {
+      "key": "realServiceId",
+      "value": ""
+    }
+  ]
+}
