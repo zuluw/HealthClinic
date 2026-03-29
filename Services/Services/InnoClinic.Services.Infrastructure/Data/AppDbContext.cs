@@ -1,5 +1,6 @@
 ﻿using InnoClinic.Services.Domain.Enums;
 using InnoClinic.Services.Domain.Models;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 
@@ -13,6 +14,10 @@ namespace InnoClinic.Services.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
+            modelBuilder.AddOutboxStateEntity();
 
             modelBuilder.Entity<Specialization>(entity =>
             {
