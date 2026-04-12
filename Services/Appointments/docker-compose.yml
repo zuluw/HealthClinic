@@ -1,0 +1,36 @@
+services:
+  appointments-db:
+    image: postgres:latest
+    container_name: innoclinic-appointments-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${APPOINTMENTS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-appointments-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - appointments-pg-data:/var/lib/postgresql
+    networks:
+      - innoclinic-network
+
+  appointments-api:
+    build:
+      context: .
+      dockerfile: InnoClinic.Appointments.Api/Dockerfile
+    container_name: innoclinic-appointments-api
+    ports:
+      - "8086:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${APPOINTMENTS_DB_CONNECTION}
+    depends_on:
+      - appointments-db
+    networks:
+      - innoclinic-network
+
+volumes:
+  appointments-pg-data:
+
+networks:
+  innoclinic-network:
+    external: true

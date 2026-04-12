@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="InnoClinic.Appointments.Api/InnoClinic.Appointments.Api.csproj" />
+  <Project Path="InnoClinic.Appointments.Application/InnoClinic.Appointments.Application.csproj" />
+  <Project Path="InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj" />
+  <Project Path="InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj" />
+</Solution>
