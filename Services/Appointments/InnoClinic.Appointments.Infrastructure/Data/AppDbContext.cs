@@ -1,6 +1,7 @@
 ﻿using InnoClinic.Appointments.Domain.Enums;
 using InnoClinic.Appointments.Domain.Models;
 using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.Appointments.Infrastructure.Data
@@ -20,6 +21,10 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             modelBuilder.AddInboxStateEntity();
             modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
+
+            modelBuilder.Entity<InboxState>().ToTable("InboxState");
+            modelBuilder.Entity<OutboxMessage>().ToTable("OutboxMessage");
+            modelBuilder.Entity<OutboxState>().ToTable("OutboxState");
 
             modelBuilder.Entity<Specialization>(entity =>
             {
@@ -85,6 +90,40 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 entity.Property(e => e.PatientId).IsRequired();
                 entity.Property(e => e.DateTime).IsRequired();
             });
+
+            var officeId = "65f1a2b3c4d5e6f7a8b9c0d1";
+            var specId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+            var doctorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+            var serviceId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+            modelBuilder.Entity<Office>().HasData(
+                new Office { Id = officeId, Address = "123 Main St, New York", IsActive = true }
+            );
+
+            modelBuilder.Entity<Specialization>().HasData(
+                new Specialization { Id = specId, Name = "Cardiology", IsActive = true }
+            );
+
+            modelBuilder.Entity<Service>().HasData(
+                new Service { Id = serviceId, Name = "General Consultation", Price = 100.00m, IsActive = true, SpecializationId = specId }
+            );
+
+            modelBuilder.Entity<Doctor>().HasData(
+                new Doctor { Id = doctorId, FirstName = "Ivan", LastName = "Ivanov", MiddleName = "Ivanovich", OfficeId = officeId, Status = DoctorStatus.AtWork }
+            );
+
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.Specializations)
+                .WithMany(s => s.Doctors)
+                .UsingEntity<Dictionary<string, object>>(
+                    "DoctorSpecializations",
+                    j => j.HasOne<Specialization>().WithMany().HasForeignKey("SpecializationId"),
+                    j => j.HasOne<Doctor>().WithMany().HasForeignKey("DoctorId"),
+                    j =>
+                    {
+                        j.HasKey("DoctorId", "SpecializationId");
+                        j.HasData(new { DoctorId = doctorId, SpecializationId = specId });
+                    });
         }
     }
 }

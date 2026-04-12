@@ -1,4 +1,5 @@
-﻿using InnoClinic.Appointments.Application.Interfaces;
+﻿using InnoClinic.Appointments.Application.DTOs;
+using InnoClinic.Appointments.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinic.Appointments.Api.Controllers
@@ -32,6 +33,14 @@ namespace InnoClinic.Appointments.Api.Controllers
         public async Task<IActionResult> GetOffices([FromQuery] Guid? specializationId, CancellationToken ct)
         {
             var result = await appointmentService.GetOfficesAsync(specializationId, ct);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequestDTO request, CancellationToken ct)
+        {
+            var result = await appointmentService.CreateAppointmentAsync(request, ct);
+
             return Ok(result);
         }
     }

@@ -1,11 +1,14 @@
+using FluentValidation;
+using InnoClinic.Appointments.Api.Middleware;
 using InnoClinic.Appointments.Application.Interfaces;
-using InnoClinic.Appointments.Application.Services;
-using InnoClinic.Appointments.Infrastructure.Repositories;
-using InnoClinic.Appointments.Infrastructure.Data;
 using InnoClinic.Appointments.Application.Mappings;
+using InnoClinic.Appointments.Application.Services;
+using InnoClinic.Appointments.Application.Validators;
+using InnoClinic.Appointments.Infrastructure.Data;
+using InnoClinic.Appointments.Infrastructure.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<IAppointmentService>();
 builder.Services.AddSingleton<AppointmentMapper>();
 
 builder.Services.AddMassTransit(x =>
@@ -69,6 +74,8 @@ using (var scope = app.Services.CreateScope())
         Log.Error(ex, "An error occurred during DB migration");
     }
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

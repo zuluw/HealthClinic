@@ -10,6 +10,11 @@ services:
       - "5433:5432"
     volumes:
       - appointments-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-appointments-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - innoclinic-network
 
@@ -23,8 +28,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=${APPOINTMENTS_DB_CONNECTION}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
     depends_on:
-      - appointments-db
+      appointments-db:
+        condition: service_healthy
     networks:
       - innoclinic-network
 
