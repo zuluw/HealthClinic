@@ -53,5 +53,33 @@ namespace InnoClinic.Appointments.Api.Controllers
             var result = await appointmentService.GetDoctorScheduleAsync(doctorId, targetDate, ct);
             return Ok(result);
         }
+
+        [HttpGet("receptionist")]
+        public async Task<IActionResult> GetReceptionistAppointments([FromQuery] DateTime? date, [FromQuery] string? doctorName, [FromQuery] string? serviceName, [FromQuery] bool? isApproved, [FromQuery] string? officeId, CancellationToken ct)
+        {
+            var result = await appointmentService.GetReceptionistAppointmentsAsync(date, doctorName, serviceName, isApproved, officeId, ct);
+            return Ok(result);
+        }
+
+        [HttpPatch("{id}/reschedule")]
+        public async Task<IActionResult> Reschedule(Guid id, [FromQuery] DateTime newDateTime, CancellationToken ct)
+        {
+            await appointmentService.RescheduleAppointmentAsync(id, newDateTime, ct);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/approve")]
+        public async Task<IActionResult> Approve(Guid id, CancellationToken ct)
+        {
+            await appointmentService.ApproveAppointmentAsync(id, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
+        {
+            await appointmentService.CancelAppointmentAsync(id, ct);
+            return NoContent();
+        }
     }
 }

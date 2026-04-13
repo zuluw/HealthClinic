@@ -78,5 +78,68 @@ namespace InnoClinic.Appointments.Application.Services
                 .Select(mapper.ToScheduleDto)
                 .ToList();
         }
+
+        public async Task<List<ReceptionistScheduleResponseDTO>> GetReceptionistAppointmentsAsync(DateTime? date, string? doctorName, string? serviceName, bool? isApproved, string? officeId, CancellationToken ct)
+        {
+            logger.LogInformation("Receptionist fetching appointments. Filters - Date: {Date}, Doctor: {Doctor}, Status: {Status}", date, doctorName, isApproved);
+
+            var appointments = await repository.GetAppointmentsAsync(date, doctorName, serviceName, isApproved, officeId, ct);
+
+            return appointments
+                .Select(mapper.ToReceptionistDto)
+                .ToList();
+        }
+
+        public async Task RescheduleAppointmentAsync(Guid id, DateTime newDateTime, CancellationToken ct)
+        {
+            logger.LogInformation("Rescheduling appointment {Id} to {NewDateTime}", id, newDateTime);
+
+            var appointment = await repository.GetAppointmentByIdAsync(id, ct);
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found");
+            }
+
+            var isBusy = await repository.IsSlotBusyAsync(appointment.DoctorId, newDateTime, ct);
+            if (isBusy)
+            {
+                throw new BadRequestException("The new time slot is already taken.");
+            }
+
+            appointment.DateTime = DateTime.SpecifyKind(newDateTime, DateTimeKind.Utc);
+            await repository.SaveChangesAsync(ct);
+        }
+
+        public async Task ApproveAppointmentAsync(Guid id, CancellationToken ct)
+        {
+            logger.LogInformation("Approving appointment {Id}", id);
+
+            var appointment = await repository.GetAppointmentByIdAsync(id, ct);
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found");
+            }
+
+            appointment.IsConfirmed = true;
+            await repository.SaveChangesAsync(ct);
+
+            logger.LogInformation("Appointment {Id} successfully approved", id);
+        }
+
+        public async Task CancelAppointmentAsync(Guid id, CancellationToken ct)
+        {
+            logger.LogInformation("Canceling (deleting) appointment {Id}", id);
+
+            var appointment = await repository.GetAppointmentByIdAsync(id, ct);
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found");
+            }
+
+            repository.DeleteAppointment(appointment); 
+            await repository.SaveChangesAsync(ct);
+
+            logger.LogInformation("Appointment {Id} successfully canceled", id);
+        }
     }
 }

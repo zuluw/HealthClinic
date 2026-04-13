@@ -104,6 +104,56 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
+        public async Task<List<Appointment>> GetAppointmentsAsync(DateTime? date, string? doctorName, string? serviceName, bool? isApproved, string? officeId, CancellationToken ct)
+        {
+            IQueryable<Appointment> query = context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .Include(a => a.Service);
+
+            if (date.HasValue)
+            {
+                var startOfDay = DateTime.SpecifyKind(date.Value.Date, DateTimeKind.Utc);
+                var endOfDay = startOfDay.AddDays(1);
+                query = query.Where(a => a.DateTime >= startOfDay && a.DateTime < endOfDay);
+            }
+
+            if (!string.IsNullOrWhiteSpace(doctorName))
+            {
+                doctorName = doctorName.ToLower().Trim();
+                query = query.Where(a =>(a.Doctor.LastName + " " + a.Doctor.FirstName + " " + (a.Doctor.MiddleName ?? "")).ToLower().Contains(doctorName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(serviceName))
+            {
+                serviceName = serviceName.ToLower();
+                query = query.Where(a => a.Service.Name.ToLower().Contains(serviceName));
+            }
+
+            if (isApproved.HasValue)
+            {
+                query = query.Where(a => a.IsConfirmed == isApproved.Value);
+            }
+
+            if (!string.IsNullOrEmpty(officeId))
+            {
+                query = query.Where(a => a.Doctor.OfficeId == officeId);
+            }
+
+            return await query
+                .OrderBy(a => a.DateTime)                     
+                .ThenBy(a => a.Doctor.LastName)               
+                .ThenBy(a => a.Doctor.FirstName)              
+                .ThenBy(a => a.Service.Name)                  
+                .ToListAsync(ct);
+        }
+
+        public void DeleteAppointment(Appointment appointment)
+        {
+            context.Appointments.Remove(appointment);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);

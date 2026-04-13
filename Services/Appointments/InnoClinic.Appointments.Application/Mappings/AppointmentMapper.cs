@@ -27,6 +27,22 @@ namespace InnoClinic.Appointments.Application.Mappings
             );
         }
 
+        public ReceptionistScheduleResponseDTO ToReceptionistDto(Appointment entity)
+        {
+            var startTime = entity.DateTime.ToString("HH:mm");
+            var endTime = entity.DateTime.AddMinutes(20).ToString("HH:mm");
+
+            return new ReceptionistScheduleResponseDTO(
+                entity.Id,
+                $"{startTime} - {endTime}",
+                $"{entity.Doctor.LastName} {entity.Doctor.FirstName} {entity.Doctor.MiddleName}".Trim(),
+                $"{entity.Patient.LastName} {entity.Patient.FirstName} {entity.Patient.MiddleName}".Trim(),
+                entity.Patient.PhoneNumber,
+                entity.Service.Name,
+                entity.IsConfirmed
+            );
+        }
+
         [MapperIgnoreTarget(nameof(Appointment.Id))]
         [MapperIgnoreTarget(nameof(Appointment.Doctor))]
         [MapperIgnoreTarget(nameof(Appointment.Service))]
