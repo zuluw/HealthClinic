@@ -169,6 +169,9 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -197,11 +200,44 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             AccountId = new Guid("99999999-9999-9999-9999-999999999999"),
+                            DateOfBirth = new DateOnly(1995, 5, 20),
                             FirstName = "Sasha",
                             LastName = "Petrov",
                             MiddleName = "Alexandrovich",
                             PhoneNumber = "+375291234567"
                         });
+                });
+
+            modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Result", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppointmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Complaints")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Conclusion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Recommendations")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Service", b =>
@@ -477,6 +513,17 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Result", b =>
+                {
+                    b.HasOne("InnoClinic.Appointments.Domain.Models.Appointment", "Appointment")
+                        .WithOne()
+                        .HasForeignKey("InnoClinic.Appointments.Domain.Models.Result", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Service", b =>

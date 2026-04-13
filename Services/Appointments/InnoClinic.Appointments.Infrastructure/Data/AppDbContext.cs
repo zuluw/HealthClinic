@@ -14,6 +14,7 @@ namespace InnoClinic.Appointments.Infrastructure.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<Office> Offices { get; set; }
+        public DbSet<Result> Results { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,20 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.MiddleName).HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.DateOfBirth).IsRequired();
+            });
+
+            modelBuilder.Entity<Result>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Complaints).IsRequired();
+                entity.Property(e => e.Conclusion).IsRequired();
+                entity.Property(e => e.Recommendations).IsRequired();
+
+                entity.HasOne(r => r.Appointment)
+                    .WithOne()
+                    .HasForeignKey<Result>(r => r.AppointmentId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Specialization>(entity =>
@@ -116,7 +131,7 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             );
 
             modelBuilder.Entity<Patient>().HasData(
-                new Patient { Id = patientId, AccountId = patientAccountId, FirstName = "Sasha", LastName = "Petrov", MiddleName = "Alexandrovich", PhoneNumber = "+375291234567" }
+                new Patient { Id = patientId, AccountId = patientAccountId, FirstName = "Sasha", LastName = "Petrov", MiddleName = "Alexandrovich", PhoneNumber = "+375291234567", DateOfBirth = new DateOnly(1995, 5, 20) }
             );
 
             modelBuilder.Entity<Doctor>().HasData(

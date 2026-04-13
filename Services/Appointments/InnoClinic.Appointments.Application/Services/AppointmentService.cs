@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Appointments.Application.Services
 {
-    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> validator) : IAppointmentService
+    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator) : IAppointmentService
     {
         public async Task<List<SpecializationResponseDTO>> GetSpecializationsAsync(string? officeId, CancellationToken ct)
         {
@@ -41,7 +41,7 @@ namespace InnoClinic.Appointments.Application.Services
         {
             logger.LogInformation("Attempting to create appointment for Patient: {PatientId} with Doctor: {DoctorId}", data.PatientId, data.DoctorId);
 
-            var validationResult = await validator.ValidateAsync(data, ct);
+            var validationResult = await appointmentValidator.ValidateAsync(data, ct);
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
@@ -147,6 +147,43 @@ namespace InnoClinic.Appointments.Application.Services
             logger.LogInformation("Fetching history for patient: {PatientId}", patientId);
             var data = await repository.GetPatientHistoryAsync(patientId, ct);
             return data.Select(mapper.ToHistoryDto).ToList();
+        }
+
+        public async Task<ResultResponseDTO> CreateResultAsync(ResultRequestDTO data, CancellationToken ct)
+        {
+            logger.LogInformation("Attempting to create medical result for appointment: {AppointmentId}", data.AppointmentId);
+
+            var validationResult = await resultValidator.ValidateAsync(data, ct);
+            if (!validationResult.IsValid)
+            {
+                var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                logger.LogWarning("Validation failed for result: {Errors}", errors);
+                throw new BadRequestException(errors);
+            }
+
+            var appointment = await repository.GetAppointmentByIdAsync(data.AppointmentId, ct);
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found");
+            }
+
+            var exists = await repository.ResultExistsAsync(data.AppointmentId, ct);
+            if (exists)
+            {
+                logger.LogWarning("Result already exists for appointment {Id}", data.AppointmentId);
+                throw new BadRequestException("Medical result for this appointment has already been created.");
+            }
+
+            var resultEntity = mapper.ToEntity(data);
+
+            repository.AddResult(resultEntity);
+            await repository.SaveChangesAsync(ct);
+
+            logger.LogInformation("Medical result {Id} successfully created", resultEntity.Id);
+
+            var fullResult = await repository.GetResultDetailsAsync(resultEntity.Id, ct);
+
+            return mapper.ToResponseDto(fullResult!);
         }
     }
 }

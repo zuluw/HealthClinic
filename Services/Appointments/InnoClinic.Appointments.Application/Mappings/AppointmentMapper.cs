@@ -78,5 +78,28 @@ namespace InnoClinic.Appointments.Application.Mappings
                 entity.IsConfirmed
             );
         }
+
+        [MapperIgnoreTarget(nameof(Result.Id))]
+        [MapperIgnoreTarget(nameof(Result.Appointment))]
+        [MapperIgnoreTarget(nameof(Result.CreatedAt))]
+        public partial Result ToEntity(ResultRequestDTO dto);
+
+        public ResultResponseDTO ToResponseDto(Result entity)
+        {
+            var doctorSpecs = string.Join(", ", entity.Appointment.Doctor.Specializations.Select(s => s.Name));
+
+            return new ResultResponseDTO(
+                entity.Id,
+                entity.CreatedAt,
+                $"{entity.Appointment.Patient.LastName} {entity.Appointment.Patient.FirstName} {entity.Appointment.Patient.MiddleName}".Trim(),
+                entity.Appointment.Patient.DateOfBirth,
+                $"{entity.Appointment.Doctor.LastName} {entity.Appointment.Doctor.FirstName} {entity.Appointment.Doctor.MiddleName}".Trim(),
+                doctorSpecs,
+                entity.Appointment.Service.Name,
+                entity.Complaints,
+                entity.Conclusion,
+                entity.Recommendations
+            );
+        }
     }
 }

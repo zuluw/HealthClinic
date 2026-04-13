@@ -166,6 +166,30 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
+        public void AddResult(Result result)
+        {
+            context.Results.Add(result);
+        }
+
+        public async Task<bool> ResultExistsAsync(Guid appointmentId, CancellationToken ct)
+        {
+            return await context.Results.AnyAsync(r => r.AppointmentId == appointmentId, ct);
+        }
+
+        public async Task<Result?> GetResultDetailsAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Results
+                .AsNoTracking()
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Patient)
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.Specializations)
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Service)
+                .FirstOrDefaultAsync(r => r.Id == id, ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);
