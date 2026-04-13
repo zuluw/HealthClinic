@@ -14,5 +14,6 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task RescheduleAppointmentAsync(Guid id, DateTime newDateTime, CancellationToken ct);
         Task ApproveAppointmentAsync(Guid id, CancellationToken ct);
         Task CancelAppointmentAsync(Guid id, CancellationToken ct);
+        Task<List<PatientHistoryResponseDTO>> GetPatientHistoryAsync(Guid patientId, CancellationToken ct);
     }
 }

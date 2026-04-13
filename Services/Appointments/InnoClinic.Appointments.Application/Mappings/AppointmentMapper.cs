@@ -43,6 +43,20 @@ namespace InnoClinic.Appointments.Application.Mappings
             );
         }
 
+        public PatientHistoryResponseDTO ToHistoryDto(Appointment entity)
+        {
+            var startTime = entity.DateTime.ToString("HH:mm");
+            var endTime = entity.DateTime.AddMinutes(20).ToString("HH:mm");
+
+            return new PatientHistoryResponseDTO(
+                entity.Id,
+                entity.DateTime.Date,
+                $"{startTime} - {endTime}",
+                $"{entity.Doctor.LastName} {entity.Doctor.FirstName} {entity.Doctor.MiddleName}".Trim(),
+                entity.Service.Name
+            );
+        }
+
         [MapperIgnoreTarget(nameof(Appointment.Id))]
         [MapperIgnoreTarget(nameof(Appointment.Doctor))]
         [MapperIgnoreTarget(nameof(Appointment.Service))]

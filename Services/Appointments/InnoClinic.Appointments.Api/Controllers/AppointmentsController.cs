@@ -81,5 +81,12 @@ namespace InnoClinic.Appointments.Api.Controllers
             await appointmentService.CancelAppointmentAsync(id, ct);
             return NoContent();
         }
+
+        [HttpGet("patient/{patientId}/history")]
+        public async Task<IActionResult> GetPatientHistory(Guid patientId, CancellationToken ct)
+        {
+            var result = await appointmentService.GetPatientHistoryAsync(patientId, ct);
+            return Ok(result);
+        }
     }
 }

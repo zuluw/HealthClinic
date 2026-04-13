@@ -141,5 +141,12 @@ namespace InnoClinic.Appointments.Application.Services
 
             logger.LogInformation("Appointment {Id} successfully canceled", id);
         }
+
+        public async Task<List<PatientHistoryResponseDTO>> GetPatientHistoryAsync(Guid patientId, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching history for patient: {PatientId}", patientId);
+            var data = await repository.GetPatientHistoryAsync(patientId, ct);
+            return data.Select(mapper.ToHistoryDto).ToList();
+        }
     }
 }
