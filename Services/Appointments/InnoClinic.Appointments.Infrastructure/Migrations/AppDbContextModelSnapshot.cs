@@ -72,9 +72,23 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
 
                     b.HasIndex("DoctorId");
 
+                    b.HasIndex("PatientId");
+
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Appointments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            CreatedAt = new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc),
+                            DateTime = new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc),
+                            DoctorId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            IsConfirmed = true,
+                            PatientId = new Guid("44444444-4444-4444-4444-444444444444"),
+                            ServiceId = new Guid("33333333-3333-3333-3333-333333333333")
+                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Doctor", b =>
@@ -143,6 +157,50 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                             Id = "65f1a2b3c4d5e6f7a8b9c0d1",
                             Address = "123 Main St, New York",
                             IsActive = true
+                        });
+                });
+
+            modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Patient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Patients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            AccountId = new Guid("99999999-9999-9999-9999-999999999999"),
+                            FirstName = "Sasha",
+                            LastName = "Petrov",
+                            MiddleName = "Alexandrovich",
+                            PhoneNumber = "+375291234567"
                         });
                 });
 
@@ -402,6 +460,12 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("InnoClinic.Appointments.Domain.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("InnoClinic.Appointments.Domain.Models.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId")
@@ -409,6 +473,8 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
 
                     b.Navigation("Service");
                 });

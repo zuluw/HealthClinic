@@ -12,6 +12,7 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<List<Doctor>> GetDoctorsAsync(Guid? specializationId, string? officeId, Guid? serviceId, CancellationToken ct);
         Task<List<Service>> GetServicesAsync(Guid? specializationId, Guid? doctorId, string? officeId, CancellationToken ct);
         Task<List<Office>> GetOfficesAsync(Guid? specializationId, CancellationToken ct);
+        Task<List<Appointment>> GetDoctorScheduleAsync(Guid doctorId, DateTime date, CancellationToken ct);
 
         Task SaveChangesAsync(CancellationToken ct);
     }

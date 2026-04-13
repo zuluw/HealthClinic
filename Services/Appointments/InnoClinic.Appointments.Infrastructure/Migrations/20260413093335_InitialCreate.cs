@@ -81,6 +81,22 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Patients",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    MiddleName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Patients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Specializations",
                 columns: table => new
                 {
@@ -202,6 +218,12 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Appointments_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Appointments_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
@@ -220,6 +242,11 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                 values: new object[] { "65f1a2b3c4d5e6f7a8b9c0d1", "123 Main St, New York", true });
 
             migrationBuilder.InsertData(
+                table: "Patients",
+                columns: new[] { "Id", "AccountId", "FirstName", "LastName", "MiddleName", "PhoneNumber" },
+                values: new object[] { new Guid("44444444-4444-4444-4444-444444444444"), new Guid("99999999-9999-9999-9999-999999999999"), "Sasha", "Petrov", "Alexandrovich", "+375291234567" });
+
+            migrationBuilder.InsertData(
                 table: "Specializations",
                 columns: new[] { "Id", "IsActive", "Name" },
                 values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), true, "Cardiology" });
@@ -234,10 +261,20 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                 columns: new[] { "Id", "IsActive", "Name", "Price", "SpecializationId" },
                 values: new object[] { new Guid("33333333-3333-3333-3333-333333333333"), true, "General Consultation", 100.00m, new Guid("11111111-1111-1111-1111-111111111111") });
 
+            migrationBuilder.InsertData(
+                table: "Appointments",
+                columns: new[] { "Id", "CreatedAt", "DateTime", "DoctorId", "IsConfirmed", "PatientId", "ServiceId" },
+                values: new object[] { new Guid("77777777-7777-7777-7777-777777777777"), new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc), new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc), new Guid("22222222-2222-2222-2222-222222222222"), true, new Guid("44444444-4444-4444-4444-444444444444"), new Guid("33333333-3333-3333-3333-333333333333") });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",
                 table: "Appointments",
                 column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_PatientId",
+                table: "Appointments",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ServiceId",
@@ -301,6 +338,9 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "OutboxMessage");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "Services");

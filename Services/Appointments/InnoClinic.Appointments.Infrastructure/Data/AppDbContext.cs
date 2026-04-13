@@ -10,6 +10,7 @@ namespace InnoClinic.Appointments.Infrastructure.Data
     {
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Patient> Patients { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<Office> Offices { get; set; }
@@ -25,6 +26,15 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             modelBuilder.Entity<InboxState>().ToTable("InboxState");
             modelBuilder.Entity<OutboxMessage>().ToTable("OutboxMessage");
             modelBuilder.Entity<OutboxState>().ToTable("OutboxState");
+
+            modelBuilder.Entity<Patient>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.MiddleName).HasMaxLength(100);
+                entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
+            });
 
             modelBuilder.Entity<Specialization>(entity =>
             {
@@ -53,7 +63,6 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.MiddleName).HasMaxLength(100);
-
                 entity.Property(e => e.OfficeId).IsRequired();
 
                 entity.HasMany(d => d.Specializations)
@@ -78,16 +87,9 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             modelBuilder.Entity<Appointment>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
-                entity.HasOne(e => e.Doctor)
-                    .WithMany()
-                    .HasForeignKey(e => e.DoctorId);
-
-                entity.HasOne(e => e.Service)
-                    .WithMany()
-                    .HasForeignKey(e => e.ServiceId);
-
-                entity.Property(e => e.PatientId).IsRequired();
+                entity.HasOne(e => e.Doctor).WithMany().HasForeignKey(e => e.DoctorId);
+                entity.HasOne(e => e.Service).WithMany().HasForeignKey(e => e.ServiceId);
+                entity.HasOne(e => e.Patient).WithMany().HasForeignKey(e => e.PatientId);
                 entity.Property(e => e.DateTime).IsRequired();
             });
 
@@ -95,6 +97,11 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             var specId = Guid.Parse("11111111-1111-1111-1111-111111111111");
             var doctorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
             var serviceId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+            var patientId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+            var patientAccountId = Guid.Parse("99999999-9999-9999-9999-999999999999");
+            var appointmentId = Guid.Parse("77777777-7777-7777-7777-777777777777");
+
+            var date = new DateTime(2026, 10, 10, 14, 0, 0, DateTimeKind.Utc);
 
             modelBuilder.Entity<Office>().HasData(
                 new Office { Id = officeId, Address = "123 Main St, New York", IsActive = true }
@@ -106,6 +113,10 @@ namespace InnoClinic.Appointments.Infrastructure.Data
 
             modelBuilder.Entity<Service>().HasData(
                 new Service { Id = serviceId, Name = "General Consultation", Price = 100.00m, IsActive = true, SpecializationId = specId }
+            );
+
+            modelBuilder.Entity<Patient>().HasData(
+                new Patient { Id = patientId, AccountId = patientAccountId, FirstName = "Sasha", LastName = "Petrov", MiddleName = "Alexandrovich", PhoneNumber = "+375291234567" }
             );
 
             modelBuilder.Entity<Doctor>().HasData(
@@ -124,6 +135,19 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                         j.HasKey("DoctorId", "SpecializationId");
                         j.HasData(new { DoctorId = doctorId, SpecializationId = specId });
                     });
+
+            modelBuilder.Entity<Appointment>().HasData(
+                new Appointment
+                {
+                    Id = appointmentId,
+                    PatientId = patientId,
+                    DoctorId = doctorId,
+                    ServiceId = serviceId,
+                    DateTime = date,
+                    IsConfirmed = true,
+                    CreatedAt = date
+                }
+            );
         }
     }
 }
