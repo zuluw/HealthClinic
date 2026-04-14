@@ -190,6 +190,11 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
                 .FirstOrDefaultAsync(r => r.Id == id, ct);
         }
 
+        public async Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Results.FirstOrDefaultAsync(r => r.Id == id, ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);

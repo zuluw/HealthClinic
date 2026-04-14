@@ -2,12 +2,13 @@
 using InnoClinic.Appointments.Application.DTOs;
 using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
+using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Appointments.Application.Services
 {
-    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator) : IAppointmentService
+    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator, IValidator<UpdateResultRequestDTO> updateResultValidator) : IAppointmentService
     {
         public async Task<List<SpecializationResponseDTO>> GetSpecializationsAsync(string? officeId, CancellationToken ct)
         {
@@ -184,6 +185,34 @@ namespace InnoClinic.Appointments.Application.Services
             var fullResult = await repository.GetResultDetailsAsync(resultEntity.Id, ct);
 
             return mapper.ToResponseDto(fullResult!);
+        }
+
+        public async Task<ResultResponseDTO> UpdateResultAsync(Guid id, UpdateResultRequestDTO data, CancellationToken ct)
+        {
+            logger.LogInformation("Attempting to update medical result {Id}", id);
+
+            var validationResult = await updateResultValidator.ValidateAsync(data, ct);
+            if (!validationResult.IsValid)
+            {
+                var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new BadRequestException(errors);
+            }
+
+            var resultEntity = await repository.GetResultByIdAsync(id, ct);
+            if (resultEntity == null)
+            {
+                throw new NotFoundException("Medical result not found");
+            }
+
+            mapper.UpdateResult(data, resultEntity);
+
+            await repository.SaveChangesAsync(ct);
+
+            logger.LogInformation("Medical result {Id} successfully updated", id);
+
+            var updatedFullResult = await repository.GetResultDetailsAsync(id, ct);
+
+            return mapper.ToResponseDto(updatedFullResult!);
         }
     }
 }

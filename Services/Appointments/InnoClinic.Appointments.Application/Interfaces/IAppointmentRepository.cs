@@ -19,6 +19,7 @@ namespace InnoClinic.Appointments.Application.Interfaces
         void AddResult(Result result);
         Task<bool> ResultExistsAsync(Guid appointmentId, CancellationToken ct);
         Task<Result?> GetResultDetailsAsync(Guid id, CancellationToken ct);
+        Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct);
 
         Task SaveChangesAsync(CancellationToken ct);
     }
