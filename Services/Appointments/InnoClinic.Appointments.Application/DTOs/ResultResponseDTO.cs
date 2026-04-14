@@ -3,6 +3,7 @@
     public record ResultResponseDTO(
         Guid Id,
         DateTime Date,
+        Guid DoctorId,
         string PatientFullName,
         DateOnly PatientDateOfBirth,
         string DoctorFullName,

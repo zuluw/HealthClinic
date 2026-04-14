@@ -17,5 +17,6 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<List<PatientHistoryResponseDTO>> GetPatientHistoryAsync(Guid patientId, CancellationToken ct);
         Task<ResultResponseDTO> CreateResultAsync(ResultRequestDTO data, CancellationToken ct);
         Task<ResultResponseDTO> UpdateResultAsync(Guid id, UpdateResultRequestDTO data, CancellationToken ct);
+        Task<ResultResponseDTO> GetResultByAppointmentIdAsync(Guid appointmentId, CancellationToken ct);
     }
 }

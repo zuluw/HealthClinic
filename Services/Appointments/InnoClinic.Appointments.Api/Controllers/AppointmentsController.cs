@@ -102,5 +102,12 @@ namespace InnoClinic.Appointments.Api.Controllers
             var result = await appointmentService.UpdateResultAsync(id, request, ct);
             return Ok(result);
         }
+
+        [HttpGet("{appointmentId}/result")]
+        public async Task<IActionResult> GetResultByAppointment(Guid appointmentId, CancellationToken ct)
+        {
+            var result = await appointmentService.GetResultByAppointmentIdAsync(appointmentId, ct);
+            return Ok(result);
+        }
     }
 }

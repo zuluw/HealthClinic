@@ -1,6 +1,7 @@
 ﻿using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Domain.Models;
 using InnoClinic.Appointments.Infrastructure.Data;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.Appointments.Infrastructure.Repositories
@@ -176,9 +177,9 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
             return await context.Results.AnyAsync(r => r.AppointmentId == appointmentId, ct);
         }
 
-        public async Task<Result?> GetResultDetailsAsync(Guid id, CancellationToken ct)
+        private IQueryable<Result> GetResultFullQuery()
         {
-            return await context.Results
+            return context.Results
                 .AsNoTracking()
                 .Include(r => r.Appointment)
                     .ThenInclude(a => a.Patient)
@@ -186,8 +187,12 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
                     .ThenInclude(a => a.Doctor)
                         .ThenInclude(d => d.Specializations)
                 .Include(r => r.Appointment)
-                    .ThenInclude(a => a.Service)
-                .FirstOrDefaultAsync(r => r.Id == id, ct);
+                    .ThenInclude(a => a.Service);
+        }
+
+        public async Task<Result?> GetResultAsync(Expression<Func<Result, bool>> predicate, CancellationToken ct)
+        {
+            return await GetResultFullQuery().FirstOrDefaultAsync(predicate, ct);
         }
 
         public async Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct)
