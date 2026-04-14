@@ -11,6 +11,7 @@
         string ServiceName,
         string Complaints,
         string Conclusion,
+        string Diagnosis,
         string Recommendations
     );
 }

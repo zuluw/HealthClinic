@@ -99,6 +99,7 @@ namespace InnoClinic.Appointments.Application.Mappings
                 entity.Appointment.Service.Name,
                 entity.Complaints,
                 entity.Conclusion,
+                entity.Diagnosis,
                 entity.Recommendations
             );
         }
