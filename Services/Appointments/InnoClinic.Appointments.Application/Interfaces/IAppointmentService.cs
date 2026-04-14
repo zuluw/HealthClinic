@@ -18,5 +18,6 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<ResultResponseDTO> CreateResultAsync(ResultRequestDTO data, CancellationToken ct);
         Task<ResultResponseDTO> UpdateResultAsync(Guid id, UpdateResultRequestDTO data, CancellationToken ct);
         Task<ResultResponseDTO> GetResultByAppointmentIdAsync(Guid appointmentId, CancellationToken ct);
+        Task<byte[]> GenerateResultPdfAsync(Guid appointmentId, CancellationToken ct);
     }
 }

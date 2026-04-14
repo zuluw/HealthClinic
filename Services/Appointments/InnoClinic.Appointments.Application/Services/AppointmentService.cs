@@ -6,6 +6,9 @@ using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Domain.Exceptions;
 using InnoClinic.Appointments.Domain.Models;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace InnoClinic.Appointments.Application.Services
 {
@@ -228,6 +231,62 @@ namespace InnoClinic.Appointments.Application.Services
             }
 
             return mapper.ToResponseDto(result);
+        }
+
+        public async Task<byte[]> GenerateResultPdfAsync(Guid appointmentId, CancellationToken ct)
+        {
+            logger.LogInformation("Generating PDF result for appointment: {AppointmentId}", appointmentId);
+
+            var result = await repository.GetResultAsync(r => r.AppointmentId == appointmentId, ct);
+            if (result == null)
+            {
+                logger.LogWarning("PDF generation failed: Result for appointment {Id} not found", appointmentId);
+                throw new NotFoundException("Medical result not found");
+            }
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(50);
+                    page.Header().Text("Medical Report").FontSize(24).Bold().FontColor(Colors.Blue.Medium);
+
+                    page.Content().PaddingVertical(20).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(120);
+                            columns.RelativeColumn();
+                        });
+
+                        AddRow(table, "Patient:", $"{result.Appointment.Patient.LastName} {result.Appointment.Patient.FirstName}");
+                        AddRow(table, "Date of Birth:", result.Appointment.Patient.DateOfBirth.ToString());
+                        AddRow(table, "Doctor:", $"{result.Appointment.Doctor.LastName} {result.Appointment.Doctor.FirstName}");
+                        AddRow(table, "Service:", result.Appointment.Service.Name);
+                        AddRow(table, "Diagnosis:", result.Diagnosis);
+                        AddRow(table, "Complaints:", result.Complaints);
+                        AddRow(table, "Conclusion:", result.Conclusion);
+                        AddRow(table, "Recommendations:", result.Recommendations);
+                    });
+
+                    page.Footer().AlignCenter().Text(x =>
+                    {
+                        x.Span("Generated on: ");
+                        x.Span(DateTime.Now.ToString("f"));
+                    });
+                });
+            }).GeneratePdf();
+
+            logger.LogInformation("PDF for appointment {Id} successfully generated", appointmentId);
+            return pdfBytes;
+        }
+
+        private void AddRow(TableDescriptor table, string label, string value)
+        {
+            table.Cell().Text(label).Bold();
+            table.Cell().Text(value);
         }
     }
 }
