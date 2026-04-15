@@ -1,18 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY ["InnoClinic.Appointments.Api/InnoClinic.Appointments.Api.csproj", "InnoClinic.Appointments.Api/"]
-COPY ["InnoClinic.Appointments.Application/InnoClinic.Appointments.Application.csproj", "InnoClinic.Appointments.Application/"]
-COPY ["InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj", "InnoClinic.Appointments.Domain/"]
-COPY ["InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj", "InnoClinic.Appointments.Infrastructure/"]
+COPY ["Appointments/InnoClinic.Appointments.Api/InnoClinic.Appointments.Api.csproj", "InnoClinic.Appointments.Api/"]
+COPY ["Appointments/InnoClinic.Appointments.Application/InnoClinic.Appointments.Application.csproj", "InnoClinic.Appointments.Application/"]
+COPY ["Appointments/InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj", "InnoClinic.Appointments.Domain/"]
+COPY ["Appointments/InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj", "InnoClinic.Appointments.Infrastructure/"]
 
-COPY ["nuget.config", "./"]
-COPY ["Services/Common/NugetRepository/", "./Services/Common/NugetRepository/"]
+COPY ["Common/nuget.config", "./"]
+COPY ["Common/NugetRepository/", "./Common/NugetRepository/"]
 
 RUN dotnet restore "InnoClinic.Appointments.Api/InnoClinic.Appointments.Api.csproj"
 
 COPY . .
-WORKDIR "/src/InnoClinic.Appointments.Api"
+WORKDIR "/src/Appointments/InnoClinic.Appointments.Api"
 RUN dotnet build "InnoClinic.Appointments.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish

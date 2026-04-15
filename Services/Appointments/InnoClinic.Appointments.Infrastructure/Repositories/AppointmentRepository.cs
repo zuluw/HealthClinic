@@ -200,6 +200,31 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
             return await context.Results.FirstOrDefaultAsync(r => r.Id == id, ct);
         }
 
+        public void AddService(Service service)
+        {
+            context.Services.Add(service);
+        }
+
+        public void DeleteService(Service service)
+        {
+            context.Services.Remove(service);
+        }
+
+        public async Task<Service?> GetServiceByIdSyncAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
+        public void AddSpecialization(Specialization specialization)
+        {
+            context.Specializations.Add(specialization);
+        }
+
+        public async Task<Specialization?> GetSpecializationByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Specializations.FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);

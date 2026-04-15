@@ -1,4 +1,4 @@
-﻿namespace InnoClinic.Common.Contracts.Events.ServiceEvents
+﻿namespace InnoClinic.Common.Contracts.Events
 {
     public record ServiceCreatedEvent(Guid Id, string Name, decimal Price, string Category, Guid SpecializationId);
     public record ServiceUpdatedEvent(Guid Id, string Name, decimal Price, bool IsActive);

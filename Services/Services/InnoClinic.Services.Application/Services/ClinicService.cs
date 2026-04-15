@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using InnoClinic.Common.Contracts.Events.ServiceEvents;
+using InnoClinic.Common.Contracts.Events;
 using InnoClinic.Services.Application.DTOs;
 using InnoClinic.Services.Application.Interfaces;
 using InnoClinic.Services.Application.Mappings;

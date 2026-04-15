@@ -1,5 +1,6 @@
 using FluentValidation;
 using InnoClinic.Appointments.Api.Middleware;
+using InnoClinic.Appointments.Application.Consumers;
 using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Services;
@@ -31,6 +32,8 @@ builder.Services.AddSingleton<AppointmentMapper>();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumers(typeof(ServiceCreatedConsumer).Assembly);
+
     x.AddEntityFrameworkOutbox<AppDbContext>(o =>
     {
         o.UsePostgres();
