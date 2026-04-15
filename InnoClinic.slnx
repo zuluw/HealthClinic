@@ -29,4 +29,7 @@
     <Project Path="Services/Appointments/InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj" />
     <Project Path="Services/Appointments/InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Common/">
+    <Project Path="Services/Common/InnoClinic.Common.Contracts/InnoClinic.Common.Contracts.csproj" />
+  </Folder>
 </Solution>

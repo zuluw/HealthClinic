@@ -6,6 +6,9 @@ COPY ["InnoClinic.Appointments.Application/InnoClinic.Appointments.Application.c
 COPY ["InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj", "InnoClinic.Appointments.Domain/"]
 COPY ["InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj", "InnoClinic.Appointments.Infrastructure/"]
 
+COPY ["nuget.config", "./"]
+COPY ["Services/Common/NugetRepository/", "./Services/Common/NugetRepository/"]
+
 RUN dotnet restore "InnoClinic.Appointments.Api/InnoClinic.Appointments.Api.csproj"
 
 COPY . .
