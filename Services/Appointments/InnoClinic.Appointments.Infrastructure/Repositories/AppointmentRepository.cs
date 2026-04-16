@@ -200,6 +200,35 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
             return await context.Results.FirstOrDefaultAsync(r => r.Id == id, ct);
         }
 
+        public async Task<Service?> GetServiceByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Services
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
+        public async Task<List<Appointment>> GetAppointmentsByDateAsync(DateTime date, Guid? doctorId, Guid? specializationId, CancellationToken ct)
+        {
+            var startOfDay = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+            var endOfDay = startOfDay.AddDays(1);
+
+            var query = context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Service)
+                .Where(a => a.DateTime >= startOfDay && a.DateTime < endOfDay);
+
+            if (doctorId.HasValue)
+            {
+                query = query.Where(a => a.DoctorId == doctorId);
+            }
+            else if (specializationId.HasValue)
+            {
+                query = query.Where(a => a.Doctor.Specializations.Any(s => s.Id == specializationId));
+            }
+
+            return await query.ToListAsync(ct);
+        }
+
         public void AddService(Service service)
         {
             context.Services.Add(service);

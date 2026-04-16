@@ -21,6 +21,8 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<bool> ResultExistsAsync(Guid appointmentId, CancellationToken ct);
         Task<Result?> GetResultAsync(Expression<Func<Result, bool>> predicate, CancellationToken ct);
         Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct);
+        Task<Service?> GetServiceByIdAsync(Guid id, CancellationToken ct);
+        Task<List<Appointment>> GetAppointmentsByDateAsync(DateTime date, Guid? doctorId, Guid? specializationId, CancellationToken ct);
 
         void AddService(Service service);
         void DeleteService(Service service);

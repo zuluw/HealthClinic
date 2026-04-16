@@ -120,23 +120,58 @@ namespace InnoClinic.Appointments.Infrastructure.Data
             var date = new DateTime(2026, 10, 10, 14, 0, 0, DateTimeKind.Utc);
 
             modelBuilder.Entity<Office>().HasData(
-                new Office { Id = officeId, Address = "123 Main St, New York", IsActive = true }
+                new Office 
+                { 
+                    Id = officeId, 
+                    Address = "123 Main St, New York", 
+                    IsActive = true 
+                }
             );
 
             modelBuilder.Entity<Specialization>().HasData(
-                new Specialization { Id = specId, Name = "Cardiology", IsActive = true }
+                new Specialization 
+                { 
+                    Id = specId, 
+                    Name = "Cardiology", 
+                    IsActive = true 
+                }
             );
 
             modelBuilder.Entity<Service>().HasData(
-                new Service { Id = serviceId, Name = "General Consultation", Price = 100.00m, IsActive = true, SpecializationId = specId }
+                new Service 
+                { 
+                    Id = serviceId, 
+                    Name = "General Consultation", 
+                    Price = 100.00m, 
+                    IsActive = true, 
+                    SpecializationId = specId,
+                    Category = ServiceCategory.Consultations
+                }
             );
 
             modelBuilder.Entity<Patient>().HasData(
-                new Patient { Id = patientId, AccountId = patientAccountId, FirstName = "Sasha", LastName = "Petrov", MiddleName = "Alexandrovich", PhoneNumber = "+375291234567", DateOfBirth = new DateOnly(1995, 5, 20) }
+                new Patient 
+                { 
+                    Id = patientId, 
+                    AccountId = patientAccountId, 
+                    FirstName = "Sasha", 
+                    LastName = "Petrov", 
+                    MiddleName = "Alexandrovich", 
+                    PhoneNumber = "+375291234567", 
+                    DateOfBirth = new DateOnly(1995, 5, 20) 
+                }
             );
 
             modelBuilder.Entity<Doctor>().HasData(
-                new Doctor { Id = doctorId, FirstName = "Ivan", LastName = "Ivanov", MiddleName = "Ivanovich", OfficeId = officeId, Status = DoctorStatus.AtWork }
+                new Doctor 
+                { 
+                    Id = doctorId, 
+                    FirstName = "Ivan", 
+                    LastName = "Ivanov", 
+                    MiddleName = "Ivanovich", 
+                    OfficeId = officeId, 
+                    Status = DoctorStatus.AtWork 
+                }
             );
 
             modelBuilder.Entity<Doctor>()

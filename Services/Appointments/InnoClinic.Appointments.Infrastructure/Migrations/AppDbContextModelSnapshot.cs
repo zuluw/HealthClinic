@@ -250,6 +250,9 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -275,6 +278,7 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Category = 1,
                             IsActive = true,
                             Name = "General Consultation",
                             Price = 100.00m,
