@@ -1,11 +1,16 @@
+using Azure.Storage.Blobs;
 using InnoClinic.Documents.Api.Middleware;
+using InnoClinic.Documents.Application.Interfaces;
+using InnoClinic.Documents.Application.Mappings;
+using InnoClinic.Documents.Application.Services;
+using InnoClinic.Documents.Infrastructure.Blob;
 using InnoClinic.Documents.Infrastructure.Data;
+using InnoClinic.Documents.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Azure.Storage.Blobs;
-using InnoClinic.Documents.Application.Interfaces;
-using InnoClinic.Documents.Infrastructure.Blob;
+using FluentValidation;
+using InnoClinic.Documents.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +27,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var blobConnectionString = builder.Configuration["BlobStorage:ConnectionString"];
 
 builder.Services.AddSingleton(x => new BlobServiceClient(blobConnectionString));
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IBlobService, AzureBlobService>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddSingleton<DocumentMapper>();
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentValidator>();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -51,7 +60,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
+    try
+    {
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "An error occurred during DB migration");
+    }
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
