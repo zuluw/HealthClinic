@@ -3,6 +3,9 @@ using InnoClinic.Documents.Infrastructure.Data;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Azure.Storage.Blobs;
+using InnoClinic.Documents.Application.Interfaces;
+using InnoClinic.Documents.Infrastructure.Blob;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,11 @@ builder.Host.UseSerilog();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+var blobConnectionString = builder.Configuration["BlobStorage:ConnectionString"];
+
+builder.Services.AddSingleton(x => new BlobServiceClient(blobConnectionString));
+builder.Services.AddScoped<IBlobService, AzureBlobService>();
 
 builder.Services.AddMassTransit(x =>
 {

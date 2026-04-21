@@ -40,6 +40,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=${DOCUMENTS_DB_CONNECTION}
       - BlobStorage__ConnectionString=${BLOB_STORAGE_CONNECTION}
+      - BlobStorage__ContainerName=${BLOB_CONTAINER_NAME}
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
       - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
