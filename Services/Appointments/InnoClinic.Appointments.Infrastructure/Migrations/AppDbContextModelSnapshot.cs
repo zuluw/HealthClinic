@@ -232,6 +232,9 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("DocumentId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Recommendations")
                         .IsRequired()
                         .HasColumnType("text");

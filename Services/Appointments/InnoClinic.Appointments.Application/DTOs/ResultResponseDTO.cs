@@ -12,6 +12,7 @@
         string Complaints,
         string Conclusion,
         string Diagnosis,
-        string Recommendations
+        string Recommendations,
+        Guid? DocumentId
     );
 }

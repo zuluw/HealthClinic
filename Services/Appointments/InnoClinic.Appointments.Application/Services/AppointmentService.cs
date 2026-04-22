@@ -12,7 +12,7 @@ using QuestPDF.Infrastructure;
 
 namespace InnoClinic.Appointments.Application.Services
 {
-    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator, IValidator<UpdateResultRequestDTO> updateResultValidator) : IAppointmentService
+    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator, IValidator<UpdateResultRequestDTO> updateResultValidator, IDocumentsClient documentsClient) : IAppointmentService
     {
         public async Task<List<SpecializationResponseDTO>> GetSpecializationsAsync(string? officeId, CancellationToken ct)
         {
@@ -179,7 +179,19 @@ namespace InnoClinic.Appointments.Application.Services
                 throw new BadRequestException("Medical result for this appointment has already been created.");
             }
 
+            Guid? documentId = null;
+
+            if (data.File != null)
+            {
+                logger.LogInformation("File detected. Uploading to Documents API");
+
+                documentId = await documentsClient.UploadDocumentAsync(data.File, ct);
+
+                logger.LogInformation("File uploaded successfully. Received DocumentId: {DocumentId}", documentId);
+            }
+
             var resultEntity = mapper.ToEntity(data);
+            resultEntity.DocumentId = documentId;
 
             repository.AddResult(resultEntity);
             await repository.SaveChangesAsync(ct);

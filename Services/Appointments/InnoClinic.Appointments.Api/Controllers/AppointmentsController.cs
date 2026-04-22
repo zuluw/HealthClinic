@@ -91,7 +91,7 @@ namespace InnoClinic.Appointments.Api.Controllers
         }
 
         [HttpPost("result")]
-        public async Task<IActionResult> CreateResult([FromBody] ResultRequestDTO request, CancellationToken ct)
+        public async Task<IActionResult> CreateResult([FromForm] ResultRequestDTO request, CancellationToken ct)
         {
             var result = await appointmentService.CreateResultAsync(request, ct);
             return Ok(result);
