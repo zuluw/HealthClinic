@@ -67,5 +67,16 @@ namespace InnoClinic.Appointments.Application.Services
 
             return mapper.ToResponseDto(fullAppointment!);
         }
+
+        public async Task<List<DoctorScheduleResponseDTO>> GetDoctorScheduleAsync(Guid doctorId, DateTime date, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching schedule for Doctor: {DoctorId} on Date: {Date}", doctorId, date.ToShortDateString());
+
+            var appointments = await repository.GetDoctorScheduleAsync(doctorId, date, ct);
+
+            return appointments
+                .Select(mapper.ToScheduleDto)
+                .ToList();
+        }
     }
 }
