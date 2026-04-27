@@ -1,7 +1,9 @@
+using FluentValidation;
 using InnoClinic.Appointments.Api.Middleware;
 using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Services;
+using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Infrastructure.Data;
 using InnoClinic.Appointments.Infrastructure.Repositories;
 using MassTransit;
@@ -23,6 +25,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<IAppointmentService>();
 builder.Services.AddSingleton<AppointmentMapper>();
 
 builder.Services.AddMassTransit(x =>

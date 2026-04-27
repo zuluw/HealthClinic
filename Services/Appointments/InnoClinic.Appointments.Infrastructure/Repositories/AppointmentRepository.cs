@@ -13,7 +13,10 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
 
         public async Task<Appointment?> GetAppointmentByIdAsync(Guid id, CancellationToken ct)
         {
-            return await context.Appointments.FirstOrDefaultAsync(a => a.Id == id, ct);
+            return await context.Appointments
+                .Include(a => a.Doctor)
+                .Include(a => a.Service) 
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
         }
 
         public async Task<bool> IsSlotBusyAsync(Guid doctorId, DateTime dateTime, CancellationToken ct)
