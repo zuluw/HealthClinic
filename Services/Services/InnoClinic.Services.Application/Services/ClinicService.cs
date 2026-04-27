@@ -1,15 +1,17 @@
 ﻿using FluentValidation;
 using InnoClinic.Services.Application.DTOs;
+using InnoClinic.Services.Application.IntegrationEvents;
 using InnoClinic.Services.Application.Interfaces;
 using InnoClinic.Services.Application.Mappings;
 using InnoClinic.Services.Domain.Enums;
 using InnoClinic.Services.Domain.Exceptions;
 using InnoClinic.Services.Domain.Models;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Services.Application.Services
 {
-    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator, IValidator<UpdateSpecializationRequestDTO> updateSpecializationValidator, IValidator<UpdateServiceRequestDTO> updateServiceValidator) : IClinicService
+    public class ClinicService(IServiceRepository repository, ILogger<ClinicService> logger, ServiceMapper mapper, IValidator<SpecializationRequestDTO> validator, IValidator<UpdateSpecializationRequestDTO> updateSpecializationValidator, IValidator<UpdateServiceRequestDTO> updateServiceValidator, IPublishEndpoint publishEndpoint) : IClinicService
     {
         public async Task<List<SpecializationResponseDTO>> GetServicesAsync(ServiceCategory category, CancellationToken ct)
         {
@@ -70,6 +72,7 @@ namespace InnoClinic.Services.Application.Services
                 foreach (var service in specialization.Services)
                 {
                     service.IsActive = false;
+                    await publishEndpoint.Publish(new ServiceStatusChangedEvent(service.Id, false), ct);
                 }
                 logger.LogInformation("Cascade deactivated {Count} services for specialization {Id}", specialization.Services.Count, id);
             }
@@ -101,6 +104,7 @@ namespace InnoClinic.Services.Application.Services
             foreach (var service in servicesToRemove)
             {
                 repository.DeleteService(service);
+                await publishEndpoint.Publish(new ServiceDeletedEvent(service.Id), ct);
             }
 
             foreach (var serviceDto in data.Services)
@@ -114,6 +118,8 @@ namespace InnoClinic.Services.Application.Services
                         existing.Price = serviceDto.Price;
                         existing.IsActive = serviceDto.IsActive;
                         existing.Category = serviceDto.Category;
+
+                        await publishEndpoint.Publish(new ServiceUpdatedEvent(existing.Id, existing.ServiceName, existing.Price, existing.IsActive), ct);
                     }
                     else
                     {
@@ -132,6 +138,7 @@ namespace InnoClinic.Services.Application.Services
                     };
 
                     repository.AddService(newService);
+                    await publishEndpoint.Publish(new ServiceCreatedEvent(newService.Id, newService.ServiceName, newService.Price, newService.Category.ToString(), specialization.Id), ct);
                 }
             }
 
@@ -178,8 +185,10 @@ namespace InnoClinic.Services.Application.Services
             }
 
             service.IsActive = isActive;
-
+            
             await repository.SaveChangesAsync(ct);
+            await publishEndpoint.Publish(new ServiceStatusChangedEvent(id, isActive), ct);
+
             logger.LogInformation("Status for service {Id} successfully updated to {Status}", id, isActive);
         }
 
@@ -202,6 +211,8 @@ namespace InnoClinic.Services.Application.Services
             mapper.UpdateService(data, service);
 
             await repository.SaveChangesAsync(ct);
+            await publishEndpoint.Publish(new ServiceUpdatedEvent(id, data.ServiceName, data.Price, data.IsActive), ct);
+
             logger.LogInformation("Service {Id} successfully updated", id);
         }
 

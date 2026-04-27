@@ -22,6 +22,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=${SERVICES_DB_CONNECTION}
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+      - RabbitMq__Host=rabbitmq
     depends_on:
       - services-db
     networks: 

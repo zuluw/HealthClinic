@@ -5,6 +5,7 @@ using InnoClinic.Services.Application.Mappings;
 using InnoClinic.Services.Application.Services;
 using InnoClinic.Services.Infrastructure.Data;
 using InnoClinic.Services.Infrastructure.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -27,6 +28,30 @@ builder.Services.AddScoped<IClinicService, ClinicService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<IClinicService>();
 builder.Services.AddSingleton<ServiceMapper>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddEntityFrameworkOutbox<AppDbContext>(o =>
+    {
+        o.UseSqlServer();
+        o.UseBusOutbox();
+    });
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var host = builder.Configuration["RabbitMq:Host"];
+        var username = builder.Configuration["RabbitMq:Username"];
+        var password = builder.Configuration["RabbitMq:Password"];
+
+        cfg.Host(host, "/", h =>
+        {
+            h.Username(username);
+            h.Password(password);
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
