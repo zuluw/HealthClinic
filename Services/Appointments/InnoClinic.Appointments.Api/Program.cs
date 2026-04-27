@@ -1,11 +1,12 @@
+using InnoClinic.Appointments.Api.Middleware;
 using InnoClinic.Appointments.Application.Interfaces;
-using InnoClinic.Appointments.Application.Services;
-using InnoClinic.Appointments.Infrastructure.Repositories;
-using InnoClinic.Appointments.Infrastructure.Data;
 using InnoClinic.Appointments.Application.Mappings;
+using InnoClinic.Appointments.Application.Services;
+using InnoClinic.Appointments.Infrastructure.Data;
+using InnoClinic.Appointments.Infrastructure.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,8 @@ using (var scope = app.Services.CreateScope())
         Log.Error(ex, "An error occurred during DB migration");
     }
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
