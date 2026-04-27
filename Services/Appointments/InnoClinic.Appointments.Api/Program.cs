@@ -1,6 +1,11 @@
+using InnoClinic.Appointments.Application.Interfaces;
+using InnoClinic.Appointments.Application.Services;
+using InnoClinic.Appointments.Infrastructure.Repositories;
 using InnoClinic.Appointments.Infrastructure.Data;
+using InnoClinic.Appointments.Application.Mappings;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +17,36 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddSingleton<AppointmentMapper>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddEntityFrameworkOutbox<AppDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var host = builder.Configuration["RabbitMq:Host"];
+        var username = builder.Configuration["RabbitMq:Username"];
+        var password = builder.Configuration["RabbitMq:Password"];
+
+        cfg.Host(host, "/", h =>
+        {
+            h.Username(username);
+            h.Password(password);
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
