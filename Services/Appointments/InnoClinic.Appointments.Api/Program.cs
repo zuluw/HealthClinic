@@ -39,9 +39,9 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        var host = builder.Configuration["RabbitMq:Host"] ?? "localhost";
-        var username = builder.Configuration["RabbitMq:Username"] ?? "guest";
-        var password = builder.Configuration["RabbitMq:Password"] ?? "guest";
+        var host = builder.Configuration["RabbitMq:Host"];
+        var username = builder.Configuration["RabbitMq:Username"];
+        var password = builder.Configuration["RabbitMq:Password"];
 
         cfg.Host(host, "/", h =>
         {
@@ -74,6 +74,8 @@ using (var scope = app.Services.CreateScope())
         Log.Error(ex, "An error occurred during DB migration");
     }
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
