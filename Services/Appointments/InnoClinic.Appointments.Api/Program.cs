@@ -4,11 +4,13 @@ using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Services;
 using InnoClinic.Appointments.Application.Validators;
+using InnoClinic.Appointments.Domain.Models;
 using InnoClinic.Appointments.Infrastructure.Data;
 using InnoClinic.Appointments.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Serilog.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,11 +64,18 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
     try
     {
         if (context.Database.GetPendingMigrations().Any())
         {
             context.Database.Migrate();
+
+            if (configuration.GetValue<bool>("SeedData"))
+            {
+                await DbSeeder.SeedAsync(context);
+            }
         }
     }
     catch (Exception ex)

@@ -53,5 +53,17 @@ namespace InnoClinic.Appointments.Api.Controllers
             var result = await appointmentService.GetDoctorScheduleAsync(doctorId, targetDate, ct);
             return Ok(result);
         }
+
+        [HttpGet("my-schedule")]
+        public async Task<IActionResult> GetMySchedule([FromQuery] DateTime date, CancellationToken ct)
+        {
+            var targetDate = date == default ? DateTime.UtcNow : date;
+            targetDate = DateTime.SpecifyKind(targetDate, DateTimeKind.Utc);
+
+            var currentDoctorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
+            var result = await appointmentService.GetDoctorScheduleAsync(currentDoctorId, targetDate, ct);
+            return Ok(result);
+        }
     }
 }
