@@ -20,8 +20,8 @@ services:
 
   appointments-api:
     build:
-      context: .
-      dockerfile: InnoClinic.Appointments.Api/Dockerfile
+      context: ..
+      dockerfile: Appointments/InnoClinic.Appointments.Api/Dockerfile
     container_name: innoclinic-appointments-api
     ports:
       - "8086:8080"

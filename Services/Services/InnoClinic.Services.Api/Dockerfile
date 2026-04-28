@@ -1,18 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY ["InnoClinic.Services.Api/InnoClinic.Services.Api.csproj", "InnoClinic.Services.Api/"]
-COPY ["InnoClinic.Services.Application/InnoClinic.Services.Application.csproj", "InnoClinic.Services.Application/"]
-COPY ["InnoClinic.Services.Domain/InnoClinic.Services.Domain.csproj", "InnoClinic.Services.Domain/"]
-COPY ["InnoClinic.Services.Infrastructure/InnoClinic.Services.Infrastructure.csproj", "InnoClinic.Services.Infrastructure/"]
+COPY ["Services/InnoClinic.Services.Api/InnoClinic.Services.Api.csproj", "InnoClinic.Services.Api/"]
+COPY ["Services/InnoClinic.Services.Application/InnoClinic.Services.Application.csproj", "InnoClinic.Services.Application/"]
+COPY ["Services/InnoClinic.Services.Domain/InnoClinic.Services.Domain.csproj", "InnoClinic.Services.Domain/"]
+COPY ["Services/InnoClinic.Services.Infrastructure/InnoClinic.Services.Infrastructure.csproj", "InnoClinic.Services.Infrastructure/"]
 
-COPY ["nuget.config", "./"]
-COPY ["Services/Common/NugetRepository/", "./Services/Common/NugetRepository/"]
+COPY ["Common/nuget.config", "./"]
+COPY ["Common/NugetRepository/", "./Common/NugetRepository/"]
 
 RUN dotnet restore "InnoClinic.Services.Api/InnoClinic.Services.Api.csproj"
 
 COPY . .
-WORKDIR "/src/InnoClinic.Services.Api"
+WORKDIR "/src/Services/InnoClinic.Services.Api"
 RUN dotnet build "InnoClinic.Services.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish

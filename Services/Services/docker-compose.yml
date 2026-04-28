@@ -14,8 +14,8 @@ services:
 
   services-api:
     build:
-      context: .
-      dockerfile: InnoClinic.Services.Api/Dockerfile
+      context: ..
+      dockerfile: Services/InnoClinic.Services.Api/Dockerfile
     container_name: innoclinic-services-api
     ports:
       - "8084:8080"
