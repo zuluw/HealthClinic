@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InnoClinic.Appointments.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260413093335_InitialCreate")]
+    [Migration("20260427131127_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -38,13 +38,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasIndex("SpecializationId");
 
                     b.ToTable("DoctorSpecializations");
-
-                    b.HasData(
-                        new
-                        {
-                            DoctorId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            SpecializationId = new Guid("11111111-1111-1111-1111-111111111111")
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Appointment", b =>
@@ -80,18 +73,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Appointments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
-                            CreatedAt = new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc),
-                            DateTime = new DateTime(2026, 10, 10, 14, 0, 0, 0, DateTimeKind.Utc),
-                            DoctorId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            IsConfirmed = true,
-                            PatientId = new Guid("44444444-4444-4444-4444-444444444444"),
-                            ServiceId = new Guid("33333333-3333-3333-3333-333333333333")
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Doctor", b =>
@@ -124,17 +105,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Doctors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FirstName = "Ivan",
-                            LastName = "Ivanov",
-                            MiddleName = "Ivanovich",
-                            OfficeId = "65f1a2b3c4d5e6f7a8b9c0d1",
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Office", b =>
@@ -153,14 +123,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Offices");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "65f1a2b3c4d5e6f7a8b9c0d1",
-                            Address = "123 Main St, New York",
-                            IsActive = true
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Patient", b =>
@@ -194,17 +156,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            AccountId = new Guid("99999999-9999-9999-9999-999999999999"),
-                            FirstName = "Sasha",
-                            LastName = "Petrov",
-                            MiddleName = "Alexandrovich",
-                            PhoneNumber = "+375291234567"
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Service", b =>
@@ -233,16 +184,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasIndex("SpecializationId");
 
                     b.ToTable("Services");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            IsActive = true,
-                            Name = "General Consultation",
-                            Price = 100.00m,
-                            SpecializationId = new Guid("11111111-1111-1111-1111-111111111111")
-                        });
                 });
 
             modelBuilder.Entity("InnoClinic.Appointments.Domain.Models.Specialization", b =>
@@ -262,14 +203,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specializations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            IsActive = true,
-                            Name = "Cardiology"
-                        });
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
