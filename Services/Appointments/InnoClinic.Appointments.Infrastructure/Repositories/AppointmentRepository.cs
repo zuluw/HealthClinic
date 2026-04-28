@@ -166,6 +166,18 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
             context.Appointments.Remove(appointment);
         }
 
+        public async Task<List<Appointment>> GetPatientHistoryAsync(Guid patientId, CancellationToken ct)
+        {
+            return await context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Doctor)  
+                .Include(a => a.Service) 
+                .Where(a => a.PatientId == patientId)
+                .OrderByDescending(a => a.DateTime.Date)
+                .ThenBy(a => a.DateTime.TimeOfDay)
+                .ToListAsync(ct);
+        }
+
         public async Task SaveChangesAsync(CancellationToken ct)
         {
             await context.SaveChangesAsync(ct);
