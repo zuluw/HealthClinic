@@ -1,4 +1,5 @@
 ﻿using InnoClinic.Appointments.Domain.Models;
+using System.Linq.Expressions;
 
 namespace InnoClinic.Appointments.Application.Interfaces
 {
@@ -18,7 +19,7 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<List<Appointment>> GetPatientHistoryAsync(Guid patientId, CancellationToken ct);
         void AddResult(Result result);
         Task<bool> ResultExistsAsync(Guid appointmentId, CancellationToken ct);
-        Task<Result?> GetResultDetailsAsync(Guid id, CancellationToken ct);
+        Task<Result?> GetResultAsync(Expression<Func<Result, bool>> predicate, CancellationToken ct);
         Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct);
 
         Task SaveChangesAsync(CancellationToken ct);

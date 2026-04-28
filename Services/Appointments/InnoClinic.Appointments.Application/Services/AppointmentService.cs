@@ -4,6 +4,7 @@ using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Domain.Exceptions;
+using InnoClinic.Appointments.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Appointments.Application.Services
@@ -182,7 +183,7 @@ namespace InnoClinic.Appointments.Application.Services
 
             logger.LogInformation("Medical result {Id} successfully created", resultEntity.Id);
 
-            var fullResult = await repository.GetResultDetailsAsync(resultEntity.Id, ct);
+            var fullResult = await repository.GetResultAsync(r => r.Id == resultEntity.Id, ct);
 
             return mapper.ToResponseDto(fullResult!);
         }
@@ -210,9 +211,23 @@ namespace InnoClinic.Appointments.Application.Services
 
             logger.LogInformation("Medical result {Id} successfully updated", id);
 
-            var updatedFullResult = await repository.GetResultDetailsAsync(id, ct);
+            var updatedFullResult = await repository.GetResultAsync(r => r.Id == resultEntity.Id, ct);
 
             return mapper.ToResponseDto(updatedFullResult!);
+        }
+
+        public async Task<ResultResponseDTO> GetResultByAppointmentIdAsync(Guid appointmentId, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching medical result for appointment: {AppointmentId}", appointmentId);
+
+            var result = await repository.GetResultAsync(r => r.AppointmentId == appointmentId, ct);
+
+            if (result == null)
+            {
+                throw new NotFoundException("Medical result not found for this appointment.");
+            }
+
+            return mapper.ToResponseDto(result);
         }
     }
 }

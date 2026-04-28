@@ -91,6 +91,7 @@ namespace InnoClinic.Appointments.Application.Mappings
             return new ResultResponseDTO(
                 entity.Id,
                 entity.CreatedAt,
+                entity.Appointment.DoctorId,
                 $"{entity.Appointment.Patient.LastName} {entity.Appointment.Patient.FirstName} {entity.Appointment.Patient.MiddleName}".Trim(),
                 entity.Appointment.Patient.DateOfBirth,
                 $"{entity.Appointment.Doctor.LastName} {entity.Appointment.Doctor.FirstName} {entity.Appointment.Doctor.MiddleName}".Trim(),
