@@ -121,5 +121,13 @@ namespace InnoClinic.Appointments.Api.Controllers
             var result = await appointmentService.GetResultByAppointmentIdAsync(appointmentId, ct);
             return Ok(result);
         }
+
+        [HttpGet("{appointmentId}/result/pdf")]
+        public async Task<IActionResult> DownloadResultPdf(Guid appointmentId, CancellationToken ct)
+        {
+            var pdfResult = await appointmentService.GenerateResultPdfAsync(appointmentId, ct);
+
+            return File(pdfResult, "application/pdf", $"Result_{appointmentId}.pdf");
+        }
     }
 }
