@@ -100,7 +100,8 @@ namespace InnoClinic.Appointments.Application.Mappings
                 entity.Complaints,
                 entity.Conclusion,
                 entity.Diagnosis,
-                entity.Recommendations
+                entity.Recommendations,
+                entity.DocumentId
             );
         }
 

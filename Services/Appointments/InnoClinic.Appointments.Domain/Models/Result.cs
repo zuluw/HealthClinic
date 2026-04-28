@@ -13,5 +13,6 @@
         public required string Recommendations { get; set; }
 
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+        public Guid? DocumentId { get; set; }
     }
 }

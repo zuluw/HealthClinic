@@ -45,6 +45,7 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 entity.Property(e => e.Conclusion).IsRequired();
                 entity.Property(e => e.Diagnosis).IsRequired();
                 entity.Property(e => e.Recommendations).IsRequired();
+                entity.Property(e => e.DocumentId).IsRequired(false);
 
                 entity.HasOne(r => r.Appointment)
                     .WithOne()

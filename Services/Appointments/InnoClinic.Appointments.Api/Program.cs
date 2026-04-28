@@ -7,6 +7,7 @@ using InnoClinic.Appointments.Application.Services;
 using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Domain.Models;
 using InnoClinic.Appointments.Infrastructure.Data;
+using InnoClinic.Appointments.Infrastructure.ExternalServices;
 using InnoClinic.Appointments.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,13 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddValidatorsFromAssemblyContaining<IAppointmentService>();
 builder.Services.AddSingleton<AppointmentMapper>();
 builder.Services.AddScoped<ITimeSlotService, TimeSlotService>();
+
+var documentsApiUrl = builder.Configuration["ExternalServices:DocumentsApiUrl"];
+
+builder.Services.AddHttpClient<IDocumentsClient, DocumentsClient>(client =>
+{
+    client.BaseAddress = new Uri(documentsApiUrl);
+});
 
 builder.Services.AddMassTransit(x =>
 {
