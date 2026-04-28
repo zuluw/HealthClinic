@@ -101,5 +101,11 @@ namespace InnoClinic.Appointments.Application.Mappings
                 entity.Recommendations
             );
         }
+
+        [MapperIgnoreTarget(nameof(Result.Id))]
+        [MapperIgnoreTarget(nameof(Result.AppointmentId))]
+        [MapperIgnoreTarget(nameof(Result.Appointment))]
+        [MapperIgnoreTarget(nameof(Result.CreatedAt))]
+        public partial void UpdateResult(UpdateResultRequestDTO dto, Result entity);
     }
 }
