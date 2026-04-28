@@ -40,13 +40,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
-                table: "Patients",
-                keyColumn: "Id",
-                keyValue: new Guid("44444444-4444-4444-4444-444444444444"),
-                column: "DateOfBirth",
-                value: new DateOnly(1995, 5, 20));
-
             migrationBuilder.CreateIndex(
                 name: "IX_Results_AppointmentId",
                 table: "Results",

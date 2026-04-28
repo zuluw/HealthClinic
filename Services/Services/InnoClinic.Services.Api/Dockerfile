@@ -6,6 +6,9 @@ COPY ["InnoClinic.Services.Application/InnoClinic.Services.Application.csproj", 
 COPY ["InnoClinic.Services.Domain/InnoClinic.Services.Domain.csproj", "InnoClinic.Services.Domain/"]
 COPY ["InnoClinic.Services.Infrastructure/InnoClinic.Services.Infrastructure.csproj", "InnoClinic.Services.Infrastructure/"]
 
+COPY ["nuget.config", "./"]
+COPY ["Services/Common/NugetRepository/", "./Services/Common/NugetRepository/"]
+
 RUN dotnet restore "InnoClinic.Services.Api/InnoClinic.Services.Api.csproj"
 
 COPY . .

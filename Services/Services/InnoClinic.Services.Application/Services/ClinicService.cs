@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
+using InnoClinic.Common.Contracts.Events.ServiceEvents;
 using InnoClinic.Services.Application.DTOs;
-using InnoClinic.Services.Application.IntegrationEvents;
 using InnoClinic.Services.Application.Interfaces;
 using InnoClinic.Services.Application.Mappings;
 using InnoClinic.Services.Domain.Enums;
