@@ -9,6 +9,7 @@
 
         public required string Complaints { get; set; }
         public required string Conclusion { get; set; }
+        public required string Diagnosis { get; set; }
         public required string Recommendations { get; set; }
 
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;

@@ -13,6 +13,9 @@ namespace InnoClinic.Appointments.Application.Validators
             RuleFor(x => x.Conclusion)
                 .NotEmpty().WithMessage("Please, enter the conclusion");
 
+            RuleFor(x => x.Diagnosis)
+                .NotEmpty().WithMessage("Please, enter the diagnosis");
+
             RuleFor(x => x.Recommendations)
                 .NotEmpty().WithMessage("Please, enter the recommendations");
         }
