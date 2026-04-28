@@ -1,12 +1,21 @@
 ﻿using Riok.Mapperly.Abstractions;
 using InnoClinic.Appointments.Application.DTOs;
 using InnoClinic.Appointments.Domain.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace InnoClinic.Appointments.Application.Mappings
 {
     [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
-    public partial class AppointmentMapper
+    public partial class AppointmentMapper(IConfiguration configuration)
     {
+        private string GetTimeInterval(DateTime start)
+        {
+            var format = configuration["AppointmentSettings:TimeFormat"];
+            var duration = configuration.GetValue<int>("AppointmentSettings:DefaultDurationMinutes");
+
+            return $"{start.ToString(format)} - {start.AddMinutes(duration).ToString(format)}";
+        }
+
         public partial SpecializationResponseDTO ToDto(Specialization specialization);
         public partial ServiceResponseDTO ToDto(Service service);
         public partial OfficeResponseDTO ToDto(Office office);
@@ -14,12 +23,9 @@ namespace InnoClinic.Appointments.Application.Mappings
 
         public DoctorScheduleResponseDTO ToScheduleDto(Appointment entity)
         {
-            var startTime = entity.DateTime.ToString("HH:mm");
-            var endTime = entity.DateTime.AddMinutes(20).ToString("HH:mm");
-
             return new DoctorScheduleResponseDTO(
                 entity.Id,
-                $"{startTime} - {endTime}",
+                GetTimeInterval(entity.DateTime),
                 entity.PatientId,
                 $"{entity.Patient.LastName} {entity.Patient.FirstName} {entity.Patient.MiddleName}".Trim(),
                 entity.Service.Name,
@@ -29,12 +35,9 @@ namespace InnoClinic.Appointments.Application.Mappings
 
         public ReceptionistScheduleResponseDTO ToReceptionistDto(Appointment entity)
         {
-            var startTime = entity.DateTime.ToString("HH:mm");
-            var endTime = entity.DateTime.AddMinutes(20).ToString("HH:mm");
-
             return new ReceptionistScheduleResponseDTO(
                 entity.Id,
-                $"{startTime} - {endTime}",
+                GetTimeInterval(entity.DateTime),
                 $"{entity.Doctor.LastName} {entity.Doctor.FirstName} {entity.Doctor.MiddleName}".Trim(),
                 $"{entity.Patient.LastName} {entity.Patient.FirstName} {entity.Patient.MiddleName}".Trim(),
                 entity.Patient.PhoneNumber,
@@ -45,13 +48,10 @@ namespace InnoClinic.Appointments.Application.Mappings
 
         public PatientHistoryResponseDTO ToHistoryDto(Appointment entity)
         {
-            var startTime = entity.DateTime.ToString("HH:mm");
-            var endTime = entity.DateTime.AddMinutes(20).ToString("HH:mm");
-
             return new PatientHistoryResponseDTO(
                 entity.Id,
                 entity.DateTime.Date,
-                $"{startTime} - {endTime}",
+                GetTimeInterval(entity.DateTime),
                 $"{entity.Doctor.LastName} {entity.Doctor.FirstName} {entity.Doctor.MiddleName}".Trim(),
                 entity.Service.Name
             );
