@@ -64,28 +64,40 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
 
         public async Task<List<Service>> GetServicesAsync(Guid? specializationId, Guid? doctorId, string? officeId, CancellationToken ct)
         {
-            var query = context.Services.AsNoTracking();
+            if (doctorId.HasValue)
+            {
+                var query = from doctor in context.Doctors
+                            where doctor.Id == doctorId
+                            from spec in doctor.Specializations
+                            from service in spec.Services       
+                            select service;
+
+                return await query.Distinct().AsNoTracking().ToListAsync(ct);
+            }
 
             if (specializationId.HasValue)
             {
-                query = query.Where(s => s.SpecializationId == specializationId);
+                return await context.Services
+                    .AsNoTracking()
+                    .Where(s => s.SpecializationId == specializationId)
+                    .ToListAsync(ct);
             }
 
-            if (doctorId.HasValue)
-            {
-                query = query.Where(s => s.Specialization.Doctors.Any(d => d.Id == doctorId));
-            }
-
-            return await query.ToListAsync(ct);
+            return await context.Services.AsNoTracking().ToListAsync(ct);
         }
 
         public async Task<List<Office>> GetOfficesAsync(Guid? specializationId, CancellationToken ct)
         {
-            var query = context.Offices.AsNoTracking();
+            IQueryable<Office> query = context.Offices.AsNoTracking();
 
             if (specializationId.HasValue)
             {
-                query = query.Where(o => context.Doctors.Any(d => d.OfficeId == o.Id && d.Specializations.Any(s => s.Id == specializationId)));
+                query = from office in context.Offices
+                        join doctor in context.Doctors on office.Id equals doctor.OfficeId
+                        where doctor.Specializations.Any(s => s.Id == specializationId)
+                        select office;
+
+                query = query.Distinct();
             }
 
             return await query.ToListAsync(ct);
