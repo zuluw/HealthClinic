@@ -1,0 +1,58 @@
+services:
+  documents-db:
+    image: postgres:latest
+    container_name: innoclinic-documents-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DOCUMENTS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-documents-db
+    ports:
+      - "5434:5432" 
+    volumes:
+      - documents-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-documents-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - innoclinic-network
+
+  blob-storage:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: innoclinic-blob-storage
+    command: azurite-blob --blobHost 0.0.0.0
+    ports:
+      - "10000:10000"
+    volumes:
+      - blob-data:/data
+    networks:
+      - innoclinic-network
+
+  documents-api:
+    build:
+      context: ..
+      dockerfile: Documents/InnoClinic.Documents.Api/Dockerfile
+    container_name: innoclinic-documents-api
+    ports:
+      - "8087:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${DOCUMENTS_DB_CONNECTION}
+      - BlobStorage__ConnectionString=${BLOB_STORAGE_CONNECTION}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      documents-db:
+        condition: service_healthy
+    networks:
+      - innoclinic-network
+
+volumes:
+  documents-pg-data:
+  blob-data:
+
+networks:
+  innoclinic-network:
+    external: true

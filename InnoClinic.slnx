@@ -32,4 +32,10 @@
   <Folder Name="/Common/">
     <Project Path="Services/Common/InnoClinic.Common.Contracts/InnoClinic.Common.Contracts.csproj" />
   </Folder>
+  <Folder Name="/Documents/">
+    <Project Path="Services/Documents/InnoClinic.Documents.Api/InnoClinic.Documents.Api.csproj" />
+    <Project Path="Services/Documents/InnoClinic.Documents.Application/InnoClinic.Documents.Application.csproj" />
+    <Project Path="Services/Documents/InnoClinic.Documents.Domain/InnoClinic.Documents.Domain.csproj" />
+    <Project Path="Services/Documents/InnoClinic.Documents.Infrastructure/InnoClinic.Documents.Infrastructure.csproj" />
+  </Folder>
 </Solution>
