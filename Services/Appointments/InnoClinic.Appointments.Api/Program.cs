@@ -5,11 +5,13 @@ using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Services;
 using InnoClinic.Appointments.Application.Validators;
+using InnoClinic.Appointments.Domain.Models;
 using InnoClinic.Appointments.Infrastructure.Data;
 using InnoClinic.Appointments.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Serilog.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,9 +45,9 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        var host = builder.Configuration["RabbitMq:Host"] ?? "localhost";
-        var username = builder.Configuration["RabbitMq:Username"] ?? "guest";
-        var password = builder.Configuration["RabbitMq:Password"] ?? "guest";
+        var host = builder.Configuration["RabbitMq:Host"];
+        var username = builder.Configuration["RabbitMq:Username"];
+        var password = builder.Configuration["RabbitMq:Password"];
 
         cfg.Host(host, "/", h =>
         {
@@ -66,11 +68,18 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
     try
     {
         if (context.Database.GetPendingMigrations().Any())
         {
             context.Database.Migrate();
+
+            if (configuration.GetValue<bool>("SeedData"))
+            {
+                await DbSeeder.SeedAsync(context);
+            }
         }
     }
     catch (Exception ex)

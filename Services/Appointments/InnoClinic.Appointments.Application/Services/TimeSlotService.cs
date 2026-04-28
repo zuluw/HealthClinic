@@ -2,15 +2,16 @@
 using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Domain.Enums;
 using InnoClinic.Appointments.Domain.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace InnoClinic.Appointments.Application.Services
 {
-    public class TimeSlotService(IAppointmentRepository repository, ILogger<TimeSlotService> logger) : ITimeSlotService
+    public class TimeSlotService(IAppointmentRepository repository, ILogger<TimeSlotService> logger, IConfiguration configuration) : ITimeSlotService
     {
-        private readonly TimeSpan _workDayStart = new(8, 0, 0);
-        private readonly TimeSpan _workDayEnd = new(18, 0, 0);
-        private const int SlotMinutes = 10;
+        private readonly TimeSpan _workDayStart = TimeSpan.Parse(configuration["AppointmentSettings:WorkDayStart"]);
+        private readonly TimeSpan _workDayEnd = TimeSpan.Parse(configuration["AppointmentSettings:WorkDayEnd"]);
+        private readonly int _slotMinutes = configuration.GetValue<int>("AppointmentSettings:SlotSizeMinutes");
 
         public async Task<List<AvailableSlotsResponseDTO>> GetAvailableSlotsAsync(Guid serviceId, DateTime date, Guid? doctorId, Guid? specializationId, CancellationToken ct)
         {
@@ -36,7 +37,7 @@ namespace InnoClinic.Appointments.Application.Services
 
                 for (int i = 0; i < appSlotsCount; i++)
                 {
-                    var busyTime = appStart.Add(TimeSpan.FromMinutes(i * SlotMinutes));
+                    var busyTime = appStart.Add(TimeSpan.FromMinutes(i * _slotMinutes));
                     if (timeline.ContainsKey(busyTime)) 
                     {
                         timeline[busyTime] = false;
@@ -88,7 +89,7 @@ namespace InnoClinic.Appointments.Application.Services
             while (current < _workDayEnd)
             {
                 timeline.Add(current, true);
-                current = current.Add(TimeSpan.FromMinutes(SlotMinutes));
+                current = current.Add(TimeSpan.FromMinutes(_slotMinutes));
             }
             return timeline;
         }
