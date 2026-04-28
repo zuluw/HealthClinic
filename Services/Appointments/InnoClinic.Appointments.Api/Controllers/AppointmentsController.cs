@@ -1,12 +1,13 @@
 ﻿using InnoClinic.Appointments.Application.DTOs;
 using InnoClinic.Appointments.Application.Interfaces;
+using InnoClinic.Appointments.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinic.Appointments.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AppointmentsController(IAppointmentService appointmentService) : ControllerBase
+    public class AppointmentsController(IAppointmentService appointmentService, ITimeSlotService timeSlotService) : ControllerBase
     {
         [HttpGet("specializations")]
         public async Task<IActionResult> GetSpecializations([FromQuery] string? officeId, CancellationToken ct)
@@ -128,6 +129,13 @@ namespace InnoClinic.Appointments.Api.Controllers
             var pdfResult = await appointmentService.GenerateResultPdfAsync(appointmentId, ct);
 
             return File(pdfResult, "application/pdf", $"Result_{appointmentId}.pdf");
+        }
+
+        [HttpGet("available-slots")]
+        public async Task<IActionResult> GetSlots([FromQuery] Guid serviceId, [FromQuery] DateTime date, [FromQuery] Guid? doctorId, [FromQuery] Guid? specializationId, CancellationToken ct)
+        {
+            var result = await timeSlotService.GetAvailableSlotsAsync(serviceId, date, doctorId, specializationId, ct);
+            return Ok(result);
         }
     }
 }

@@ -31,6 +31,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<IAppointmentService>();
 builder.Services.AddSingleton<AppointmentMapper>();
+builder.Services.AddScoped<ITimeSlotService, TimeSlotService>();
 
 builder.Services.AddMassTransit(x =>
 {

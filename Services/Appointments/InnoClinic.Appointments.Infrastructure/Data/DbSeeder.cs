@@ -42,6 +42,7 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 Price = 100.00m,
                 IsActive = true,
                 SpecializationId = specId,
+                Category = ServiceCategory.Consultations
             };
 
             var patient = new Patient
