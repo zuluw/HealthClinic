@@ -17,13 +17,6 @@ namespace InnoClinic.Appointments.Infrastructure.Migrations
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.UpdateData(
-                table: "Services",
-                keyColumn: "Id",
-                keyValue: new Guid("33333333-3333-3333-3333-333333333333"),
-                column: "Category",
-                value: 1);
         }
 
         /// <inheritdoc />
