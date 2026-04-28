@@ -43,7 +43,6 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Complaints).IsRequired();
                 entity.Property(e => e.Conclusion).IsRequired();
-                entity.Property(e => e.Diagnosis).IsRequired();
                 entity.Property(e => e.Recommendations).IsRequired();
 
                 entity.HasOne(r => r.Appointment)
