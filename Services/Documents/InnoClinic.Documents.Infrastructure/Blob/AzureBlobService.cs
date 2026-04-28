@@ -14,7 +14,7 @@ namespace InnoClinic.Documents.Infrastructure.Blob
         public AzureBlobService(BlobServiceClient blobServiceClient, IConfiguration configuration, ILogger<AzureBlobService> logger)
         {
             _logger = logger;
-            var containerName = configuration["BlobStorage:ContainerName"] ?? "clinic-documents";
+            var containerName = configuration["BlobStorage:ContainerName"];
             _containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
             _containerClient.CreateIfNotExists(PublicAccessType.None);
