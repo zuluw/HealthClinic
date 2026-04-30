@@ -38,4 +38,10 @@
     <Project Path="Services/Documents/InnoClinic.Documents.Domain/InnoClinic.Documents.Domain.csproj" />
     <Project Path="Services/Documents/InnoClinic.Documents.Infrastructure/InnoClinic.Documents.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Notifications/">
+    <Project Path="Services/Notifications/InnoClinic.Notifications.Api/InnoClinic.Notifications.Api.csproj" />
+    <Project Path="Services/Notifications/InnoClinic.Notifications.Application/InnoClinic.Notifications.Application.csproj" />
+    <Project Path="Services/Notifications/InnoClinic.Notifications.Domain/InnoClinic.Notifications.Domain.csproj" />
+    <Project Path="Services/Notifications/InnoClinic.Notifications.Infrastructure/InnoClinic.Notifications.Infrastructure.csproj" />
+  </Folder>
 </Solution>

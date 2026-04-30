@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="InnoClinic.Notifications.Api/InnoClinic.Notifications.Api.csproj" />
+  <Project Path="InnoClinic.Notifications.Application/InnoClinic.Notifications.Application.csproj" />
+  <Project Path="InnoClinic.Notifications.Domain/InnoClinic.Notifications.Domain.csproj" />
+  <Project Path="InnoClinic.Notifications.Infrastructure/InnoClinic.Notifications.Infrastructure.csproj" />
+</Solution>

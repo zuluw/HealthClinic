@@ -1,0 +1,45 @@
+services:
+  notifications-db:
+    image: postgres:latest
+    container_name: innoclinic-notifications-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-notifications-db
+    ports:
+      - "5434:5432"  
+    volumes:
+      - notifications-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-notifications-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - innoclinic-network
+
+  notifications-api:
+    build:
+      context: ..
+      dockerfile: Notifications/InnoClinic.Notifications.Api/Dockerfile
+    container_name: innoclinic-notifications-api
+    ports:
+      - "8087:8080" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${NOTIFICATIONS_DB_CONNECTION}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      notifications-db:
+        condition: service_healthy
+    networks:
+      - innoclinic-network
+
+volumes:
+  notifications-pg-data:
+
+networks:
+  innoclinic-network:
+    external: true
