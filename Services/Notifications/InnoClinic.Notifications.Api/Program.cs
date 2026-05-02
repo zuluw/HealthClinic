@@ -1,5 +1,11 @@
+using Hangfire;
+using Hangfire.PostgreSql;
 using InnoClinic.Notifications.Api.Middleware;
+using InnoClinic.Notifications.Application.Interfaces;
+using InnoClinic.Notifications.Application.Services;
 using InnoClinic.Notifications.Infrastructure.Data;
+using InnoClinic.Notifications.Infrastructure.ExternalServices;
+using InnoClinic.Notifications.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -16,6 +22,18 @@ builder.Host.UseSerilog();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+
+builder.Services.AddHangfireServer();
+
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -51,12 +69,26 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
     try
     {
         if (context.Database.GetPendingMigrations().Any())
         {
             context.Database.Migrate();
+        }
+
+        var cronExpression = configuration["NotificationSettings:CronSchedule"];
+        var jobId = configuration["NotificationSettings:JobId"];
+
+        if (!string.IsNullOrEmpty(cronExpression) && !string.IsNullOrEmpty(jobId))
+        {
+            recurringJobManager.AddOrUpdate<INotificationService>(
+                jobId,
+                service => service.SendDailyRemindersAsync(CancellationToken.None),
+                cronExpression);
+
+            Log.Information("Hangfire recurring job '{JobId}' registered successfully", jobId);
         }
     }
     catch (Exception ex)
@@ -66,6 +98,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = []
+});
 
 if (app.Environment.IsDevelopment())
 {

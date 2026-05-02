@@ -36,7 +36,14 @@ services:
         condition: service_healthy
     networks:
       - innoclinic-network
-
+  mail-server:
+    image: axllent/mailpit
+    container_name: innoclinic-mail-server
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - innoclinic-network
 volumes:
   notifications-pg-data:
 
