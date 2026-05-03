@@ -37,20 +37,34 @@ builder.Services.AddMassTransit(x =>
         o.UseBusOutbox();
     });
 
-    x.UsingRabbitMq((context, cfg) =>
+    var useAzure = builder.Configuration.GetValue<bool>("UseAzureServiceBus");
+
+    if (useAzure)
     {
-        var host = builder.Configuration["RabbitMq:Host"];
-        var username = builder.Configuration["RabbitMq:Username"];
-        var password = builder.Configuration["RabbitMq:Password"];
-
-        cfg.Host(host, "/", h =>
+        x.UsingAzureServiceBus((context, cfg) =>
         {
-            h.Username(username);
-            h.Password(password);
+            var connectionString = builder.Configuration.GetConnectionString("AzureServiceBus");
+            cfg.Host(connectionString);
+            cfg.ConfigureEndpoints(context);
         });
+    }
+    else
+    {
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            var host = builder.Configuration["RabbitMq:Host"];
+            var username = builder.Configuration["RabbitMq:Username"];
+            var password = builder.Configuration["RabbitMq:Password"];
 
-        cfg.ConfigureEndpoints(context);
-    });
+            cfg.Host(host, "/", h =>
+            {
+                h.Username(username);
+                h.Password(password);
+            });
+
+            cfg.ConfigureEndpoints(context);
+        });
+    }
 });
 
 builder.Services.AddControllers();
