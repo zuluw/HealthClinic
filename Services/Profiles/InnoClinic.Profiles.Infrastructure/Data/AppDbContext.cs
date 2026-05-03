@@ -23,6 +23,7 @@ namespace InnoClinic.Profiles.Infrastructure.Data
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.MiddleName).HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
             });
 
             modelBuilder.Entity<Doctor>(entity =>

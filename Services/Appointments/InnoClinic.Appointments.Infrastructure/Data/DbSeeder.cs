@@ -53,7 +53,8 @@ namespace InnoClinic.Appointments.Infrastructure.Data
                 LastName = "Petrov",
                 MiddleName = "Alexandrovich",
                 PhoneNumber = "+375291234567",
-                DateOfBirth = new DateOnly(1995, 5, 20)
+                DateOfBirth = new DateOnly(1995, 5, 20),
+                Email = "placeholder@example.com"
             };
 
             var doctor = new Doctor
