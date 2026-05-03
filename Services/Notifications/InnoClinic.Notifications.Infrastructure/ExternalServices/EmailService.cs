@@ -48,5 +48,41 @@ namespace InnoClinic.Notifications.Infrastructure.ExternalServices
                 throw;
             }
         }
+
+        public async Task SendAttachmentAsync(string toEmail, string subject, string body, byte[] pdfContent, string fileName, CancellationToken ct)
+        {
+            var smtpHost = configuration["EmailSettings:Host"];
+            var smtpPort = configuration.GetValue<int>("EmailSettings:Port");
+            var fromEmail = configuration["EmailSettings:SenderEmail"];
+            var fromName = configuration["EmailSettings:SenderName"];
+
+            logger.LogInformation("Attempting to send result email with attachment to {Email}", toEmail);
+
+            try
+            {
+                using var client = new SmtpClient(smtpHost, smtpPort);
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(fromEmail!, fromName),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = false
+                };
+                mailMessage.To.Add(toEmail);
+
+                using var ms = new MemoryStream(pdfContent);
+                var attachment = new Attachment(ms, fileName, "application/pdf");
+                mailMessage.Attachments.Add(attachment);
+
+                await client.SendMailAsync(mailMessage, ct);
+
+                logger.LogInformation("Result email with attachment successfully sent to {Email}", toEmail);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send result email to {Email}", toEmail);
+                throw;
+            }
+        }
     }
 }

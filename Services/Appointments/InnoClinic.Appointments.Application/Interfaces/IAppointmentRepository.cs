@@ -29,6 +29,8 @@ namespace InnoClinic.Appointments.Application.Interfaces
         Task<Service?> GetServiceByIdSyncAsync(Guid id, CancellationToken ct);
         void AddSpecialization(Specialization specialization);
         Task<Specialization?> GetSpecializationByIdAsync(Guid id, CancellationToken ct);
+        Task<Patient?> GetPatientByIdAsync(Guid id, CancellationToken ct);
+        Task<Doctor?> GetDoctorByIdAsync(Guid id, CancellationToken ct);
 
         Task SaveChangesAsync(CancellationToken ct);
     }

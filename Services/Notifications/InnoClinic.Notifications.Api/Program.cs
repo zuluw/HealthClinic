@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using InnoClinic.Notifications.Api.Middleware;
+using InnoClinic.Notifications.Application.Consumers;
 using InnoClinic.Notifications.Application.Interfaces;
 using InnoClinic.Notifications.Application.Services;
 using InnoClinic.Notifications.Infrastructure.Data;
@@ -37,6 +38,10 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<AppointmentCreatedConsumer>();
+    x.AddConsumer<ResultCreatedConsumer>();
+    x.AddConsumer<ResultUpdatedConsumer>();
+
     x.AddEntityFrameworkOutbox<AppDbContext>(o =>
     {
         o.UsePostgres();

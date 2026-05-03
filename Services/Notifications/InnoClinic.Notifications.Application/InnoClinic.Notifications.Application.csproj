@@ -5,10 +5,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="InnoClinic.Common.Contracts" Version="1.0.4" />
+    <PackageReference Include="InnoClinic.Common.Contracts" Version="1.0.5" />
     <PackageReference Include="MassTransit" Version="8.3.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+    <PackageReference Include="QuestPDF" Version="2026.2.4" />
   </ItemGroup>
 
   <PropertyGroup>
