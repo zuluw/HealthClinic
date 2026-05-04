@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<OutputType>Exe</OutputType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<SuppressAzureFunctionsSdkChecks>true</SuppressAzureFunctionsSdkChecks>
+		<_FunctionsSkipTargetFrameworkCheck>true</_FunctionsSkipTargetFrameworkCheck>
+		<SkipFunctionsFrameworkCheck>true</SkipFunctionsFrameworkCheck>
+		<FunctionsNoWarnOnMissingTargetConfiguration>true</FunctionsNoWarnOnMissingTargetConfiguration>
+		<FunctionsEnableExecutorSourceGen>false</FunctionsEnableExecutorSourceGen>
+		<FunctionsEnableMetadataSourceGen>false</FunctionsEnableMetadataSourceGen>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.20.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+		<PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="9.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\InnoClinic.Notifications.Application\InnoClinic.Notifications.Application.csproj" />
+		<ProjectReference Include="..\InnoClinic.Notifications.Infrastructure\InnoClinic.Notifications.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="host.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="local.settings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Target Name="_CheckTargetFrameworkAndAzureFunctionsVersion" BeforeTargets="Build" />
+</Project>
