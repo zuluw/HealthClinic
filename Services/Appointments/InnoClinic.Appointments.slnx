@@ -3,4 +3,5 @@
   <Project Path="InnoClinic.Appointments.Application/InnoClinic.Appointments.Application.csproj" />
   <Project Path="InnoClinic.Appointments.Domain/InnoClinic.Appointments.Domain.csproj" />
   <Project Path="InnoClinic.Appointments.Infrastructure/InnoClinic.Appointments.Infrastructure.csproj" />
+  <Project Path="InnoClinic.Appointments.UnitTests/InnoClinic.Appointments.UnitTests.csproj" />
 </Solution>
