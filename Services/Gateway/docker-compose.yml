@@ -1,0 +1,19 @@
+services:
+  gateway-api:
+    build:
+      context: ..
+      dockerfile: Gateway/InnoClinic.Gateway/Dockerfile
+    container_name: innoclinic-gateway
+    ports:
+      - "${GATEWAY_PORT}:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Jwt__Key=${AUTH_JWT_KEY}
+      - Jwt__Issuer=${AUTH_JWT_ISSUER}
+      - Jwt__Audience=${AUTH_JWT_AUDIENCE}
+    networks:
+      - innoclinic-network
+
+networks:
+  innoclinic-network:
+    external: true
