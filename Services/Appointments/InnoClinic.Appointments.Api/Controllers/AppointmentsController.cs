@@ -2,6 +2,7 @@
 using InnoClinic.Appointments.Application.Interfaces;
 using InnoClinic.Appointments.Application.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace InnoClinic.Appointments.Api.Controllers
 {
@@ -10,6 +11,7 @@ namespace InnoClinic.Appointments.Api.Controllers
     public class AppointmentsController(IAppointmentService appointmentService, ITimeSlotService timeSlotService) : ControllerBase
     {
         [HttpGet("specializations")]
+        [OutputCache(PolicyName = "CatalogPolicy")]
         public async Task<IActionResult> GetSpecializations([FromQuery] string? officeId, CancellationToken ct)
         {
             var result = await appointmentService.GetSpecializationsAsync(officeId, ct);
@@ -17,6 +19,7 @@ namespace InnoClinic.Appointments.Api.Controllers
         }
 
         [HttpGet("doctors")]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetDoctors([FromQuery] Guid? specializationId, [FromQuery] string? officeId, [FromQuery] Guid? serviceId, CancellationToken ct)
         {
             var result = await appointmentService.GetDoctorsAsync(specializationId, officeId, serviceId, ct);
@@ -24,6 +27,7 @@ namespace InnoClinic.Appointments.Api.Controllers
         }
 
         [HttpGet("services")]
+        [OutputCache(PolicyName = "CatalogPolicy")]
         public async Task<IActionResult> GetServices([FromQuery] Guid? specializationId, [FromQuery] Guid? doctorId, [FromQuery] string? officeId, CancellationToken ct)
         {
             var result = await appointmentService.GetServicesAsync(specializationId, doctorId, officeId, ct);
@@ -31,6 +35,7 @@ namespace InnoClinic.Appointments.Api.Controllers
         }
 
         [HttpGet("offices")]
+        [OutputCache(PolicyName = "CatalogPolicy")]
         public async Task<IActionResult> GetOffices([FromQuery] Guid? specializationId, CancellationToken ct)
         {
             var result = await appointmentService.GetOfficesAsync(specializationId, ct);
