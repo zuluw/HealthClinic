@@ -79,7 +79,7 @@ namespace InnoClinic.Appointments.Application.Services
                 patient.FirstName,
                 patient.LastName,
                 patient.MiddleName,
-                "placeholder@example.com",
+                patient.Email,
                 doctor.FirstName,
                 doctor.LastName,
                 doctor.MiddleName,
@@ -217,7 +217,7 @@ namespace InnoClinic.Appointments.Application.Services
 
             await publishEndpoint.Publish(new ResultCreatedEvent(
                 appointment.Id,
-                "placeholder@example.com",
+                appointment.Patient.Email,
                 $"{appointment.Patient.LastName} {appointment.Patient.FirstName}",
                 $"{appointment.Doctor.LastName} {appointment.Doctor.FirstName}",
                 appointment.Service.Name,
@@ -257,7 +257,7 @@ namespace InnoClinic.Appointments.Application.Services
 
             await publishEndpoint.Publish(new ResultUpdatedEvent(
                 resultEntity.AppointmentId,
-                "placeholder@example.com",
+                resultEntity.Appointment.Patient.Email, 
                 $"{resultEntity.Appointment.Patient.LastName} {resultEntity.Appointment.Patient.FirstName}",
                 $"{resultEntity.Appointment.Doctor.LastName} {resultEntity.Appointment.Doctor.FirstName}",
                 resultEntity.Appointment.Service.Name,

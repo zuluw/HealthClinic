@@ -7,6 +7,7 @@
         string LastName,
         string? MiddleName,
         DateOnly DateOfBirth,
-        string PhoneNumber
+        string PhoneNumber,
+        string Email
     );
 }
