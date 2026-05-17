@@ -36,11 +36,322 @@ services:
       - innoclinic-network
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-      
+
+  auth-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-auth-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${AUTH_DB_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-auth-data:/var/opt/mssql
+    networks: 
+      - innoclinic-network
+
+  auth-api:
+    build:
+      context: ./Services/Authorization
+      dockerfile: InnoClinic.Auth.Api/Dockerfile
+    container_name: innoclinic-auth-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Authentication__Google__ClientSecret=${GOOGLE_CLIENT_SECRET}
+      - Jwt__Key=${AUTH_JWT_KEY}
+      - ConnectionStrings__DefaultConnection=${AUTH_DB_CONNECTION}
+    depends_on:
+      - auth-db
+    networks:
+      - innoclinic-network
+
+  offices-db:
+    image: mongo:latest
+    container_name: innoclinic-offices-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${OFFICES_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${OFFICES_DB_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./Services/Offices/InnoClinic.Offices.Api/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks: 
+      - innoclinic-network
+
+  mongo-ui:
+    image: mongo-express:latest
+    container_name: innoclinic-mongo-ui
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=${OFFICES_DB_USER}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${OFFICES_DB_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://${OFFICES_DB_USER}:${OFFICES_DB_PASSWORD}@offices-db:27017/
+    depends_on:
+      - offices-db
+    networks: 
+      - innoclinic-network
+
+  offices-api:
+    build:
+      context: ./Services/Offices
+      dockerfile: InnoClinic.Offices.Api/Dockerfile
+    container_name: innoclinic-offices-api
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDbSettings__ConnectionString=mongodb://${OFFICES_DB_USER}:${OFFICES_DB_PASSWORD}@offices-db:27017
+      - MongoDbSettings__DatabaseName=${OFFICES_DB_NAME}
+    depends_on:
+      - offices-db
+    networks: 
+      - innoclinic-network
+
+  profiles-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-profiles-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${PROFILES_DB_PASSWORD}
+    ports:
+      - "1434:1433"
+    volumes:
+      - profiles-mssql-data:/var/opt/mssql
+    networks: 
+      - innoclinic-network
+
+  profiles-api:
+    build:
+      context: ./Services/Profiles
+      dockerfile: InnoClinic.Profiles.Api/Dockerfile
+    container_name: innoclinic-profiles-api
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${PROFILES_DB_CONNECTION}
+    depends_on:
+      - profiles-db
+    networks: 
+      - innoclinic-network
+
+  services-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innoclinic-services-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${SERVICES_DB_PASSWORD}
+    ports:
+      - "1435:1433"
+    volumes:
+      - services-mssql-data:/var/opt/mssql
+    networks: 
+      - innoclinic-network
+
+  services-api:
+    build:
+      context: ./Services
+      dockerfile: Services/InnoClinic.Services.Api/Dockerfile
+    container_name: innoclinic-services-api
+    ports:
+      - "8084:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${SERVICES_DB_CONNECTION}
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__AzureServiceBus=${AZURE_SERVICE_BUS_CONNECTION}
+    depends_on:
+      - services-db
+      - rabbitmq
+    networks: 
+      - innoclinic-network
+
+  appointments-db:
+    image: postgres:latest
+    container_name: innoclinic-appointments-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${APPOINTMENTS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-appointments-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - appointments-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-appointments-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - innoclinic-network
+
+  appointments-redis:
+    image: redis:latest
+    container_name: innoclinic-appointments-redis
+    networks:
+      - innoclinic-network
+
+  appointments-api:
+    build:
+      context: ./Services
+      dockerfile: Appointments/InnoClinic.Appointments.Api/Dockerfile
+    container_name: innoclinic-appointments-api
+    ports:
+      - "8086:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${APPOINTMENTS_DB_CONNECTION}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+      - Redis__ConnectionString=appointments-redis:6379
+    depends_on:
+      appointments-db:
+        condition: service_healthy
+      appointments-redis:
+        condition: service_started
+    networks:
+      - innoclinic-network
+
+  documents-db:
+    image: postgres:latest
+    container_name: innoclinic-documents-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DOCUMENTS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-documents-db
+    ports:
+      - "5434:5432" 
+    volumes:
+      - documents-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-documents-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - innoclinic-network
+
+  blob-storage:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: innoclinic-blob-storage
+    command: azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
+    ports:
+      - "10000:10000"
+    volumes:
+      - blob-data:/data
+    networks:
+      - innoclinic-network
+
+  documents-api:
+    build:
+      context: ./Services
+      dockerfile: Documents/InnoClinic.Documents.Api/Dockerfile
+    container_name: innoclinic-documents-api
+    ports:
+      - "8087:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${DOCUMENTS_DB_CONNECTION}
+      - BlobStorage__ConnectionString=${BLOB_STORAGE_CONNECTION}
+      - BlobStorage__ContainerName=${BLOB_CONTAINER_NAME}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      documents-db:
+        condition: service_healthy
+      blob-storage:
+        condition: service_started
+    networks:
+      - innoclinic-network
+
+  notifications-db:
+    image: postgres:latest
+    container_name: innoclinic-notifications-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD}
+      POSTGRES_DB: innoclinic-notifications-db
+    ports:
+      - "5435:5432"  
+    volumes:
+      - notifications-pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d innoclinic-notifications-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - innoclinic-network
+
+  mail-server:
+    image: axllent/mailpit
+    container_name: innoclinic-mail-server
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - innoclinic-network
+
+  notifications-api:
+    build:
+      context: ./Services
+      dockerfile: Notifications/InnoClinic.Notifications.Api/Dockerfile
+    container_name: innoclinic-notifications-api
+    ports:
+      - "8088:8080" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${NOTIFICATIONS_DB_CONNECTION}
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      notifications-db:
+        condition: service_healthy
+      mail-server:
+        condition: service_started
+    networks:
+      - innoclinic-network
+
+  gateway-api:
+    build:
+      context: ./Services
+      dockerfile: Gateway/InnoClinic.Gateway/Dockerfile
+    container_name: innoclinic-gateway
+    ports:
+      - "${GATEWAY_PORT:-5000}:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Jwt__Key=${AUTH_JWT_KEY}
+      - Jwt__Issuer=${AUTH_JWT_ISSUER}
+      - Jwt__Audience=${AUTH_JWT_AUDIENCE}
+    depends_on:
+      - auth-api
+      - appointments-api
+    networks:
+      - innoclinic-network
+
 volumes:
   logs_data:
   rabbitmq_data:
-  
+  mssql-auth-data:
+  mongo-data:
+  profiles-mssql-data:
+  services-mssql-data:
+  appointments-pg-data:
+  documents-pg-data:
+  blob-data:
+  notifications-pg-data:
+
 networks:
   innoclinic-network:
     external: true
