@@ -1,4 +1,5 @@
 using FluentValidation;
+using InnoClinic.Appointments.Api.Caching;
 using InnoClinic.Appointments.Api.Middleware;
 using InnoClinic.Appointments.Application.Consumers;
 using InnoClinic.Appointments.Application.Interfaces;
@@ -23,9 +24,30 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+var expirationMinutes = builder.Configuration.GetValue<int>("CacheSettings:CatalogExpirationMinutes");
+
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("CatalogPolicy", builder =>
+    {
+        builder.AddPolicy<CatalogPolicy>();
+        builder.Expire(TimeSpan.FromMinutes(expirationMinutes));
+    });
+});
+
+builder.Services.AddSingleton<CatalogPolicy>();
+
+builder.Services.AddStackExchangeRedisOutputCache(options =>
+{
+    options.Configuration = redisConnectionString;
+    options.InstanceName = "Appointments_";
+});
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -111,6 +133,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseOutputCache();
 
 if (app.Environment.IsDevelopment())
 {

@@ -18,6 +18,12 @@ services:
     networks:
       - innoclinic-network
 
+  appointments-redis:
+    image: redis:latest
+    container_name: innoclinic-appointments-redis
+    networks:
+      - innoclinic-network
+
   appointments-api:
     build:
       context: ..
@@ -32,9 +38,12 @@ services:
       - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
       - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
       - ConnectionStrings__AzureServiceBus=${AZURE_SERVICE_BUS_CONNECTION}
+      - Redis__ConnectionString=appointments-redis:6379
     depends_on:
       appointments-db:
         condition: service_healthy
+      appointments-redis:
+        condition: service_started
     networks:
       - innoclinic-network
 
