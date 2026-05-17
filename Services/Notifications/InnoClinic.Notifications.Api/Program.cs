@@ -36,11 +36,16 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+var enableConsumers = builder.Configuration.GetValue<bool>("UseLocalConsumers");
+
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<AppointmentCreatedConsumer>();
-    x.AddConsumer<ResultCreatedConsumer>();
-    x.AddConsumer<ResultUpdatedConsumer>();
+    if (enableConsumers)
+    {
+        x.AddConsumer<AppointmentCreatedConsumer>();
+        x.AddConsumer<ResultCreatedConsumer>();
+        x.AddConsumer<ResultUpdatedConsumer>();
+    }
 
     x.AddEntityFrameworkOutbox<AppDbContext>(o =>
     {

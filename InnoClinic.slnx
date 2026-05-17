@@ -43,5 +43,8 @@
     <Project Path="Services/Notifications/InnoClinic.Notifications.Application/InnoClinic.Notifications.Application.csproj" />
     <Project Path="Services/Notifications/InnoClinic.Notifications.Domain/InnoClinic.Notifications.Domain.csproj" />
     <Project Path="Services/Notifications/InnoClinic.Notifications.Infrastructure/InnoClinic.Notifications.Infrastructure.csproj" />
+	<Project Path="Services/Notifications/InnoClinic.Notifications.Functions/InnoClinic.Notifications.Functions.csproj">
+	  <Build Solution="Debug|*" Project="false" />
+	</Project>
   </Folder>
 </Solution>
