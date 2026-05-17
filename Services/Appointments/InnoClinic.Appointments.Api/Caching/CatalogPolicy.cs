@@ -2,8 +2,10 @@
 
 namespace InnoClinic.Appointments.Api.Caching
 {
-    public sealed class CatalogPolicy : IOutputCachePolicy
+    public sealed class CatalogPolicy(IConfiguration configuration) : IOutputCachePolicy
     {
+        private readonly bool _cacheNonSuccess = configuration.GetValue<bool>("CacheSettings:CacheNonSuccessResponses");
+
         public ValueTask CacheRequestAsync(OutputCacheContext context, CancellationToken cancellationToken)
         {
             var request = context.HttpContext.Request;
@@ -33,7 +35,7 @@ namespace InnoClinic.Appointments.Api.Caching
         {
             var response = context.HttpContext.Response;
 
-            if (response.StatusCode != StatusCodes.Status200OK)
+            if (!_cacheNonSuccess && response.StatusCode != StatusCodes.Status200OK)
             {
                 context.EnableOutputCaching = false;
             }

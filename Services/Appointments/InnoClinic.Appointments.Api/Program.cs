@@ -29,15 +29,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+var expirationMinutes = builder.Configuration.GetValue<int>("CacheSettings:CatalogExpirationMinutes");
+
 builder.Services.AddOutputCache(options =>
 {
     options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
     options.AddPolicy("CatalogPolicy", builder =>
     {
         builder.AddPolicy<CatalogPolicy>();
-        builder.Expire(TimeSpan.FromMinutes(10));
+        builder.Expire(TimeSpan.FromMinutes(expirationMinutes));
     });
 });
+
+builder.Services.AddSingleton<CatalogPolicy>();
 
 builder.Services.AddStackExchangeRedisOutputCache(options =>
 {
