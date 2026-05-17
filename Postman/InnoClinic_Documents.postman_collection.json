@@ -1,0 +1,133 @@
+{
+  "info": {
+    "_postman_id": "0bc00b66-8230-464a-af4b-132209ffe475",
+    "name": "InnoClinic_Documents",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49723158",
+    "_collection_link": "https://go.postman.co/collection/49723158-0bc00b66-8230-464a-af4b-132209ffe475?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "/api/documents/upload",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              "\r",
+              "const jsonData = pm.response.json();\r",
+              "\r",
+              "if (jsonData.id) {\r",
+              "    pm.collectionVariables.set(\"blobId\", jsonData.id);    \r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "ddff079b-9770-4615-afc2-9d75e6fa9f07",
+              "src": "/D:/1.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/upload",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents",
+            "upload"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/documents/{{blobId}}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/{{blobId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents",
+            "{{blobId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/documents/{{blobId}}",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/{{blobId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents",
+            "{{blobId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "blobId",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

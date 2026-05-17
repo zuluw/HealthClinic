@@ -1,0 +1,79 @@
+{
+  "info": {
+    "_postman_id": "50d88849-905d-40ad-a28f-919bca386406",
+    "name": "InnoClinic_Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49723158",
+    "_collection_link": "https://go.postman.co/collection/49723158-50d88849-905d-40ad-a28f-919bca386406?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "/api/appointments/specializations",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJadWx1dyIsIlVzZXJTdGF0dXMiOiJVbmNvbmZpcm1lZCIsImV4cCI6MTc3ODQ0NjQzOSwiaXNzIjoiSW5ub0NsaW5pY1NlcnZlciIsImF1ZCI6Iklubm9DbGluaWNDbGllbnQifQ.VLD8GfsAxiUltoPcSKUfd4b8eieiQso5mFsyBp6vPkU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/appointments/specializations",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "appointments",
+            "specializations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJadWx1dyIsIlVzZXJTdGF0dXMiOiJVbmNvbmZpcm1lZCIsImV4cCI6MTc3ODQ0NjQzOSwiaXNzIjoiSW5ub0NsaW5pY1NlcnZlciIsImF1ZCI6Iklubm9DbGluaWNDbGllbnQifQ.VLD8GfsAxiUltoPcSKUfd4b8eieiQso5mFsyBp6vPkU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/appointments/specializations?officeId=65f1a2b3c4d5e6f7a8b9c0d1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "appointments",
+            "specializations"
+          ],
+          "query": [
+            {
+              "key": "officeId",
+              "value": "65f1a2b3c4d5e6f7a8b9c0d1"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

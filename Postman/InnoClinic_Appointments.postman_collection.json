@@ -1,0 +1,1049 @@
+{
+  "info": {
+    "_postman_id": "2b96b187-f5ca-40b2-88c6-9e8ac9904455",
+    "name": "InnoClinic_Appointments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49723158",
+    "_collection_link": "https://go.postman.co/collection/49723158-2b96b187-f5ca-40b2-88c6-9e8ac9904455?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "/api/appointments/specializations?officeId={{officeId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/specializations?officeId={{officeId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "specializations"
+          ],
+          "query": [
+            {
+              "key": "officeId",
+              "value": "{{officeId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/doctors?specializationId={{specId}}&officeId={{officeId}}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/doctors?specializationId={{specId}}&officeId={{officeId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "doctors"
+          ],
+          "query": [
+            {
+              "key": "specializationId",
+              "value": "{{specId}}"
+            },
+            {
+              "key": "officeId",
+              "value": "{{officeId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments_invalid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"patientId\": \"44444444-4444-4444-4444-444444444444\",\r\n  \"doctorId\": \"{{doctorId}}\",\r\n  \"serviceId\": \"{{serviceId}}\",\r\n  \"specializationId\": \"{{specId}}\",\r\n  \"officeId\": \"{{officeId}}\",\r\n  \"dateTime\": \"2025-12-12T10:00:00Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"patientId\": \"44444444-4444-4444-4444-444444444444\",\r\n  \"doctorId\": \"{{doctorId}}\",\r\n  \"serviceId\": \"{{serviceId}}\",\r\n  \"specializationId\": \"{{specId}}\",\r\n  \"officeId\": \"{{officeId}}\",\r\n  \"dateTime\": \"2030-12-12T10:00:00Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/doctor/22222222-2222-2222-2222-222222222222/schedule",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/doctor/22222222-2222-2222-2222-222222222222/schedule",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "doctor",
+            "22222222-2222-2222-2222-222222222222",
+            "schedule"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/doctor/22222222-2222-2222-2222-222222222222/schedule?date=2025-10-10",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/doctor/22222222-2222-2222-2222-222222222222/schedule?date=2026-10-10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "doctor",
+            "22222222-2222-2222-2222-222222222222",
+            "schedule"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-10-10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist?doctorName=Ivan",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist?doctorName=Ivan",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ],
+          "query": [
+            {
+              "key": "doctorName",
+              "value": "Ivan"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist?isApproved=true",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist?isApproved=true",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ],
+          "query": [
+            {
+              "key": "isApproved",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist?doctorName=Ivanov Ivan",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist?doctorName=Ivanov Ivan",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ],
+          "query": [
+            {
+              "key": "doctorName",
+              "value": "Ivanov Ivan"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/77777777-7777-7777-7777-777777777777/reschedule?newDateTime",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/77777777-7777-7777-7777-777777777777/reschedule?newDateTime=2026-10-10T16:00:00Z",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "77777777-7777-7777-7777-777777777777",
+            "reschedule"
+          ],
+          "query": [
+            {
+              "key": "newDateTime",
+              "value": "2026-10-10T16:00:00Z"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"patientId\": \"44444444-4444-4444-4444-444444444444\",\r\n  \"doctorId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"serviceId\": \"33333333-3333-3333-3333-333333333333\",\r\n  \"specializationId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"officeId\": \"65f1a2b3c4d5e6f7a8b9c0d1\",\r\n  \"dateTime\": \"2026-10-10T15:00:00Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"patientId\": \"44444444-4444-4444-4444-444444444444\",\r\n  \"doctorId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"serviceId\": \"33333333-3333-3333-3333-333333333333\",\r\n  \"specializationId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"officeId\": \"65f1a2b3c4d5e6f7a8b9c0d1\",\r\n  \"dateTime\": \"2026-10-10T09:00:00Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments Copy 2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"patientId\": \"44444444-4444-4444-4444-444444444444\",\r\n  \"doctorId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"serviceId\": \"33333333-3333-3333-3333-333333333333\",\r\n  \"specializationId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"officeId\": \"65f1a2b3c4d5e6f7a8b9c0d1\",\r\n  \"dateTime\": \"2026-12-12T12:00:00Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/patient/44444444-4444-4444-4444-444444444444/history",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/patient/44444444-4444-4444-4444-444444444444/history",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "patient",
+            "44444444-4444-4444-4444-444444444444",
+            "history"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/result",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              "\r",
+              "const jsonData = pm.response.json();\r",
+              "\r",
+              "if (jsonData.id) {\r",
+              "    pm.environment.set(\"resultId\", jsonData.id);    \r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "appointmentId",
+              "value": "77777777-7777-7777-7777-777777777777",
+              "type": "text",
+              "uuid": "ab888339-def9-4de6-8893-ecb289de4709"
+            },
+            {
+              "key": "complaints",
+              "value": "test",
+              "type": "text",
+              "uuid": "f5f0d3f5-b803-4348-8c43-a9131d54e4df"
+            },
+            {
+              "key": "conclusion",
+              "value": "test",
+              "type": "text",
+              "uuid": "097a47ea-140a-4723-a239-fa98736782b9"
+            },
+            {
+              "key": "diagnosis",
+              "value": "test",
+              "type": "text",
+              "uuid": "e409b26a-29c6-4319-a0fe-5793f959db1e"
+            },
+            {
+              "key": "recommendations",
+              "value": "test",
+              "type": "text",
+              "uuid": "f29a7970-634a-4a67-ad23-31ef9841bab3"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "642e423e-f6fb-4d0d-86a8-33318a999945",
+              "src": "/D:/1.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/result",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "result"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/receptionist Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "file",
+          "file": {}
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/receptionist",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "receptionist"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/results/77777777-7777-7777-7777-777777777777",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"complaints\": \"Updated: head still hurts\",\r\n  \"conclusion\": \"Updated: Migraine\",\r\n  \"diagnosis\": \"Updated: Migraine\",\r\n  \"recommendations\": \"Updated: Drink more water and rest\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/results/{{resultId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "results",
+            "{{resultId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/77777777-7777-7777-7777-777777777777/result",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/77777777-7777-7777-7777-777777777777/result",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "77777777-7777-7777-7777-777777777777",
+            "result"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/77777777-7777-7777-7777-777777777777/result/pdf",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/77777777-7777-7777-7777-777777777777/result/pdf",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "77777777-7777-7777-7777-777777777777",
+            "result",
+            "pdf"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/available-slots?serviceId=33333333-3333-3333-3333-333333333333&date=2026-10-10&doctorId=22222222-2222-2222-2222-222222222222",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/available-slots?serviceId=33333333-3333-3333-3333-333333333333&date=2026-10-10&doctorId=22222222-2222-2222-2222-222222222222",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "available-slots"
+          ],
+          "query": [
+            {
+              "key": "serviceId",
+              "value": "33333333-3333-3333-3333-333333333333"
+            },
+            {
+              "key": "date",
+              "value": "2026-10-10"
+            },
+            {
+              "key": "doctorId",
+              "value": "22222222-2222-2222-2222-222222222222"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/77777777-7777-7777-7777-777777777777/cancel",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/77777777-7777-7777-7777-777777777777",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "77777777-7777-7777-7777-777777777777"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/appointments/my-schedule?date=2026-10-10",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/my-schedule?date=2026-10-10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "my-schedule"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-10-10"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "doctorId",
+      "value": ""
+    },
+    {
+      "key": "serviceId",
+      "value": ""
+    },
+    {
+      "key": "specId",
+      "value": ""
+    },
+    {
+      "key": "officeId",
+      "value": ""
+    }
+  ]
+}
