@@ -25,6 +25,7 @@ services:
       - RabbitMq__Username=${RABBITMQ_DEFAULT_USER}
       - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
       - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__AzureServiceBus=${AZURE_SERVICE_BUS_CONNECTION}
     depends_on:
       - services-db
     networks: 
