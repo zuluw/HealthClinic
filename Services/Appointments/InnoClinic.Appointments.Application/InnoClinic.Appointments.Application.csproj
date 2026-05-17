@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="InnoClinic.Common.Contracts" Version="1.0.4" />
+    <PackageReference Include="InnoClinic.Common.Contracts" Version="1.0.5" />
     <PackageReference Include="MassTransit" Version="8.3.6" />
     <PackageReference Include="QuestPDF" Version="2026.2.4" />
     <PackageReference Include="Riok.Mapperly" Version="4.3.1" />

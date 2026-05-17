@@ -5,6 +5,8 @@ using InnoClinic.Appointments.Application.Mappings;
 using InnoClinic.Appointments.Application.Validators;
 using InnoClinic.Appointments.Domain.Exceptions;
 using InnoClinic.Appointments.Domain.Models;
+using InnoClinic.Common.Contracts.Events;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -12,7 +14,7 @@ using QuestPDF.Infrastructure;
 
 namespace InnoClinic.Appointments.Application.Services
 {
-    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator, IValidator<UpdateResultRequestDTO> updateResultValidator, IDocumentsClient documentsClient) : IAppointmentService
+    public class AppointmentService(IAppointmentRepository repository, ILogger<AppointmentService> logger, AppointmentMapper mapper, IValidator<AppointmentRequestDTO> appointmentValidator, IValidator<ResultRequestDTO> resultValidator, IValidator<UpdateResultRequestDTO> updateResultValidator, IDocumentsClient documentsClient, IPublishEndpoint publishEndpoint) : IAppointmentService
     {
         public async Task<List<SpecializationResponseDTO>> GetSpecializationsAsync(string? officeId, CancellationToken ct)
         {
@@ -61,16 +63,34 @@ namespace InnoClinic.Appointments.Application.Services
                 throw new BadRequestException("This time slot is already taken by another appointment.");
             }
 
+            var patient = await repository.GetPatientByIdAsync(data.PatientId, ct) ?? throw new NotFoundException("Patient not found");
+            var doctor = await repository.GetDoctorByIdAsync(data.DoctorId, ct) ?? throw new NotFoundException("Doctor not found");
+            var service = await repository.GetServiceByIdAsync(data.ServiceId, ct) ?? throw new NotFoundException("Service not found");
+
             var appointment = mapper.ToEntity(data);
+            appointment.Patient = patient;
+            appointment.Doctor = doctor;
+            appointment.Service = service;
 
             repository.AddAppointment(appointment);
+
+            await publishEndpoint.Publish(new AppointmentCreatedEvent(
+                appointment.Id,
+                patient.FirstName,
+                patient.LastName,
+                patient.MiddleName,
+                "placeholder@example.com",
+                doctor.FirstName,
+                doctor.LastName,
+                doctor.MiddleName,
+                service.Name,
+                appointment.DateTime
+            ), ct);
+
             await repository.SaveChangesAsync(ct);
 
             logger.LogInformation("Appointment successfully created with ID: {Id}", appointment.Id);
-
-            var fullAppointment = await repository.GetAppointmentByIdAsync(appointment.Id, ct);
-
-            return mapper.ToResponseDto(fullAppointment!);
+            return mapper.ToResponseDto(appointment);
         }
 
         public async Task<List<DoctorScheduleResponseDTO>> GetDoctorScheduleAsync(Guid doctorId, DateTime date, CancellationToken ct)
@@ -194,12 +214,25 @@ namespace InnoClinic.Appointments.Application.Services
             resultEntity.DocumentId = documentId;
 
             repository.AddResult(resultEntity);
+
+            await publishEndpoint.Publish(new ResultCreatedEvent(
+                appointment.Id,
+                "placeholder@example.com",
+                $"{appointment.Patient.LastName} {appointment.Patient.FirstName}",
+                $"{appointment.Doctor.LastName} {appointment.Doctor.FirstName}",
+                appointment.Service.Name,
+                appointment.DateTime,
+                resultEntity.Complaints,
+                resultEntity.Conclusion,
+                resultEntity.Diagnosis,
+                resultEntity.Recommendations
+            ), ct);
+
             await repository.SaveChangesAsync(ct);
 
             logger.LogInformation("Medical result {Id} successfully created", resultEntity.Id);
 
             var fullResult = await repository.GetResultAsync(r => r.Id == resultEntity.Id, ct);
-
             return mapper.ToResponseDto(fullResult!);
         }
 
@@ -222,12 +255,24 @@ namespace InnoClinic.Appointments.Application.Services
 
             mapper.UpdateResult(data, resultEntity);
 
+            await publishEndpoint.Publish(new ResultUpdatedEvent(
+                resultEntity.AppointmentId,
+                "placeholder@example.com",
+                $"{resultEntity.Appointment.Patient.LastName} {resultEntity.Appointment.Patient.FirstName}",
+                $"{resultEntity.Appointment.Doctor.LastName} {resultEntity.Appointment.Doctor.FirstName}",
+                resultEntity.Appointment.Service.Name,
+                resultEntity.Appointment.DateTime,
+                resultEntity.Complaints,
+                resultEntity.Conclusion,
+                resultEntity.Diagnosis,
+                resultEntity.Recommendations
+            ), ct);
+
             await repository.SaveChangesAsync(ct);
 
             logger.LogInformation("Medical result {Id} successfully updated", id);
 
             var updatedFullResult = await repository.GetResultAsync(r => r.Id == resultEntity.Id, ct);
-
             return mapper.ToResponseDto(updatedFullResult!);
         }
 

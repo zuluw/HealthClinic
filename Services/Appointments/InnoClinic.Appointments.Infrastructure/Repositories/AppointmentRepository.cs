@@ -16,7 +16,8 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
         {
             return await context.Appointments
                 .Include(a => a.Doctor)
-                .Include(a => a.Service) 
+                .Include(a => a.Service)
+                .Include(a => a.Patient)
                 .FirstOrDefaultAsync(a => a.Id == id, ct);
         }
 
@@ -209,14 +210,19 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
 
         public async Task<Result?> GetResultByIdAsync(Guid id, CancellationToken ct)
         {
-            return await context.Results.FirstOrDefaultAsync(r => r.Id == id, ct);
+            return await context.Results
+                .Include(r => r.Appointment)          
+                    .ThenInclude(a => a.Patient)  
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Doctor)       
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Service)    
+                .FirstOrDefaultAsync(r => r.Id == id, ct);
         }
 
         public async Task<Service?> GetServiceByIdAsync(Guid id, CancellationToken ct)
         {
-            return await context.Services
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id, ct);
+            return await context.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
         }
 
         public async Task<List<Appointment>> GetAppointmentsByDateAsync(DateTime date, Guid? doctorId, Guid? specializationId, CancellationToken ct)
@@ -264,6 +270,16 @@ namespace InnoClinic.Appointments.Infrastructure.Repositories
         public async Task<Specialization?> GetSpecializationByIdAsync(Guid id, CancellationToken ct)
         {
             return await context.Specializations.FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
+        public async Task<Patient?> GetPatientByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Patients.FirstOrDefaultAsync(p => p.Id == id, ct);
+        }
+
+        public async Task<Doctor?> GetDoctorByIdAsync(Guid id, CancellationToken ct)
+        {
+            return await context.Doctors.FirstOrDefaultAsync(d => d.Id == id, ct);
         }
 
         public async Task SaveChangesAsync(CancellationToken ct)
