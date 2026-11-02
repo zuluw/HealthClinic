@@ -1,7 +1,5 @@
 # InnoClinic
 
-### Internship Project
-
 ## 🛠 Tech Stack
 - **Backend:** .NET 10, ASP.NET Core
 - **Databases:** 
