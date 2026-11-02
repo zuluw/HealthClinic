@@ -54,4 +54,4 @@
 | **Logs DB** | [http://localhost:8085](http://localhost:8085) | MongoDB |
 
 ---
-*Copyright (c) 2026 Alexandr Mikhalkov*
+*Copyright (c) 2026 Aleksandr Mikhalkov*
